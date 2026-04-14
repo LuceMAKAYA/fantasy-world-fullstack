@@ -1,0 +1,327 @@
+openapi: 3.0.3
+info:
+  title: Fantasy World API
+  description: API de gestion d'aventuriers Fantasy World
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Serveur de développement
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ─── AUTH ────────────────────────────────────────────
+
+  /auth/login:
+    post:
+      tags:
+        - Authentification
+      summary: Se connecter
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Identifiants invalides
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+
+  # ─── AVENTURIERS ─────────────────────────────────────
+
+  /aventuriers:
+    get:
+      tags:
+        - Aventuriers
+      summary: Lister les aventuriers (paginé)
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 6
+      responses:
+        "200":
+          description: Liste paginée des aventuriers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageAventurier"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags:
+        - Aventuriers
+      summary: Créer un aventurier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AventurierRequest"
+      responses:
+        "201":
+          description: Aventurier créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AventurierResponse"
+        "400":
+          description: Données invalides
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /aventuriers/{id}:
+    get:
+      tags:
+        - Aventuriers
+      summary: Consulter un aventurier
+      parameters:
+        - $ref: "#/components/parameters/UuidId"
+      responses:
+        "200":
+          description: Détail de l'aventurier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AventurierResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      tags:
+        - Aventuriers
+      summary: Modifier un aventurier
+      parameters:
+        - $ref: "#/components/parameters/UuidId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AventurierRequest"
+      responses:
+        "200":
+          description: Aventurier modifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AventurierResponse"
+        "400":
+          description: Données invalides
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags:
+        - Aventuriers
+      summary: Supprimer un aventurier
+      parameters:
+        - $ref: "#/components/parameters/UuidId"
+      responses:
+        "204":
+          description: Aventurier supprimé
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+# ─── COMPONENTS ──────────────────────────────────────────
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    UuidId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    Unauthorized:
+      description: Token absent ou expiré
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    Forbidden:
+      description: Droits insuffisants
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    NotFound:
+      description: Ressource non trouvée
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
+  schemas:
+    # Auth
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: admin
+        password:
+          type: string
+          example: admin123
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGci...
+        username:
+          type: string
+          example: admin
+
+    # Aventurier
+    Classe:
+      type: string
+      enum:
+        - MAITRE_D_ARMES
+        - ECLAIREUR
+        - ARCANISTE
+        - GARDIEN
+        - PREDICATEUR
+
+    AventurierRequest:
+      type: object
+      required:
+        - nom
+        - physique
+        - mental
+        - perception
+        - classe
+      properties:
+        nom:
+          type: string
+          minLength: 1
+          maxLength: 120
+          example: Adhakhan du clan de la Chope Fumante
+        description:
+          type: string
+          maxLength: 500
+          example: Un guerrier redoutable
+        physique:
+          type: integer
+          minimum: 1
+          maximum: 20
+          example: 18
+        mental:
+          type: integer
+          minimum: 1
+          maximum: 20
+          example: 14
+        perception:
+          type: integer
+          minimum: 1
+          maximum: 20
+          example: 13
+        classe:
+          $ref: "#/components/schemas/Classe"
+
+    AventurierResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nom:
+          type: string
+        description:
+          type: string
+        physique:
+          type: integer
+        mental:
+          type: integer
+        perception:
+          type: integer
+        niveau:
+          type: integer
+        classe:
+          $ref: "#/components/schemas/Classe"
+
+    PageAventurier:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/AventurierResponse"
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    # Erreur
+    ProblemDetail:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
