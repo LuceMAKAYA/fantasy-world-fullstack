@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Fantasy World API
-  description: API de gestion d'aventuriers Fantasy World
+  description: API de gestion d'aventuriers et de compétences Fantasy World
   version: 1.0.0
 
 servers:
@@ -11,161 +11,437 @@ servers:
 security:
   - bearerAuth: []
 
-paths:
-  # ─── AUTH ────────────────────────────────────────────
+tags:
+  - name: Authentification
+    description: Gestion des comptes et sessions
+  - name: Aventuriers
+    description: Gestion des aventuriers
+  - name: Compétences
+    description: Référentiel des compétences
+  - name: Association
+    description: Compétences des aventuriers
 
-  /auth/login:
+paths:
+
+  # ═══════════════════════════════════════════
+  # AUTH
+  # ═══════════════════════════════════════════
+
+  /auth/register:
     post:
-      tags:
-        - Authentification
-      summary: Se connecter
+      tags: [Authentification]
+      summary: Créer un compte
+      description: "PUBLIC — Crée un compte avec le rôle VIEWER par défaut."
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginRequest"
+              $ref: '#/components/schemas/RegisterRequest'
       responses:
-        "200":
+        '201':
+          description: Compte créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Nom d'utilisateur déjà existant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  /auth/login:
+    post:
+      tags: [Authentification]
+      summary: Se connecter
+      description: "PUBLIC — Retourne un JWT à inclure dans Authorization: Bearer."
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
           description: Connexion réussie
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginResponse"
-        "401":
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
           description: Identifiants invalides
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProblemDetail"
+                $ref: '#/components/schemas/ProblemDetail'
 
-  # ─── AVENTURIERS ─────────────────────────────────────
+  /auth/logout:
+    post:
+      tags: [Authentification]
+      summary: Se déconnecter
+      description: "VIEWER, ADMIN — Suppression du token côté client uniquement."
+      responses:
+        '204':
+          description: Déconnexion réussie
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ═══════════════════════════════════════════
+  # AVENTURIERS
+  # ═══════════════════════════════════════════
 
   /aventuriers:
     get:
-      tags:
-        - Aventuriers
-      summary: Lister les aventuriers (paginé)
+      tags: [Aventuriers]
+      summary: Lister les aventuriers
+      description: "VIEWER, ADMIN — Liste paginée."
       parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 6
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
       responses:
-        "200":
+        '200':
           description: Liste paginée des aventuriers
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PageAventurier"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
+                $ref: '#/components/schemas/PageAventurier'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
     post:
-      tags:
-        - Aventuriers
+      tags: [Aventuriers]
       summary: Créer un aventurier
+      description: "ADMIN — Le niveau est automatiquement initialisé à 1."
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AventurierRequest"
+              $ref: '#/components/schemas/AventurierRequest'
       responses:
-        "201":
+        '201':
           description: Aventurier créé
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AventurierResponse"
-        "400":
-          description: Données invalides
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetail"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
+                $ref: '#/components/schemas/AventurierResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /aventuriers/{id}:
     get:
-      tags:
-        - Aventuriers
+      tags: [Aventuriers]
       summary: Consulter un aventurier
+      description: "VIEWER, ADMIN"
       parameters:
-        - $ref: "#/components/parameters/UuidId"
+        - $ref: '#/components/parameters/UuidId'
       responses:
-        "200":
+        '200':
           description: Détail de l'aventurier
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AventurierResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
+                $ref: '#/components/schemas/AventurierResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
     put:
-      tags:
-        - Aventuriers
+      tags: [Aventuriers]
       summary: Modifier un aventurier
+      description: "ADMIN — Le niveau ne peut pas être modifié directement."
       parameters:
-        - $ref: "#/components/parameters/UuidId"
+        - $ref: '#/components/parameters/UuidId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AventurierRequest"
+              $ref: '#/components/schemas/AventurierRequest'
       responses:
-        "200":
+        '200':
           description: Aventurier modifié
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AventurierResponse"
-        "400":
-          description: Données invalides
+                $ref: '#/components/schemas/AventurierResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Aventuriers]
+      summary: Supprimer un aventurier
+      description: "ADMIN"
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '204':
+          description: Aventurier supprimé
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ═══════════════════════════════════════════
+  # COMPÉTENCES
+  # ═══════════════════════════════════════════
+
+  /competences:
+    get:
+      tags: [Compétences]
+      summary: Lister les compétences
+      description: "VIEWER, ADMIN — Liste paginée avec prérequis."
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: Liste paginée des compétences
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProblemDetail"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
+                $ref: '#/components/schemas/PageCompetence'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Compétences]
+      summary: Créer une compétence
+      description: "ADMIN — Les UUID de competencesRequises doivent exister."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompetenceRequest'
+      responses:
+        '201':
+          description: Compétence créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetenceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /competences/{id}:
+    get:
+      tags: [Compétences]
+      summary: Consulter une compétence
+      description: "VIEWER, ADMIN — Prérequis résolus."
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Détail de la compétence
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetenceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Compétences]
+      summary: Modifier une compétence
+      description: "ADMIN — Rejeté si les nouveaux prérequis rendraient des aventuriers incohérents (Règle 2)."
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompetenceRequest'
+      responses:
+        '200':
+          description: Compétence modifiée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetenceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Modification impossible — aventuriers impactés
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailCompetenceModification'
 
     delete:
-      tags:
-        - Aventuriers
-      summary: Supprimer un aventurier
+      tags: [Compétences]
+      summary: Supprimer une compétence
+      description: "ADMIN — Rejeté si des aventuriers possèdent cette compétence."
       parameters:
-        - $ref: "#/components/parameters/UuidId"
+        - $ref: '#/components/parameters/UuidId'
       responses:
-        "204":
-          description: Aventurier supprimé
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
+        '204':
+          description: Compétence supprimée
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Suppression impossible — compétence possédée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
 
-# ─── COMPONENTS ──────────────────────────────────────────
+  /competences/{id}/aventuriers:
+    get:
+      tags: [Compétences]
+      summary: Aventuriers liés à une compétence
+      description: "VIEWER, ADMIN — Possesseurs et éligibles."
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Possesseurs et éligibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetenceAventuriersResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ═══════════════════════════════════════════
+  # ASSOCIATION
+  # ═══════════════════════════════════════════
+
+  /aventuriers/{id}/competences:
+    get:
+      tags: [Association]
+      summary: Compétences acquises par un aventurier
+      description: "VIEWER, ADMIN"
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Liste des compétences acquises
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CompetenceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /aventuriers/{id}/competences/disponibles:
+    get:
+      tags: [Association]
+      summary: Compétences disponibles et bloquées
+      description: "VIEWER, ADMIN — Acquérables et bloquées avec raisons."
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Compétences acquérables et bloquées
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetencesDisponiblesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /aventuriers/{id}/competences/{competenceId}:
+    post:
+      tags: [Association]
+      summary: Ajouter une compétence à un aventurier
+      description: "ADMIN — Vérifie tous les prérequis (Règle 1)."
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+        - $ref: '#/components/parameters/CompetenceId'
+      responses:
+        '201':
+          description: Compétence attribuée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AventurierResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: Prérequis non satisfaits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailPrerequisManquants'
+
+    delete:
+      tags: [Association]
+      summary: Retirer une compétence à un aventurier
+      description: "ADMIN — Rejeté si la compétence est prérequis d'une autre déjà possédée (Règle 3)."
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+        - $ref: '#/components/parameters/CompetenceId'
+      responses:
+        '204':
+          description: Compétence retirée
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Retrait impossible — compétence prérequis d'une autre
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+# ═══════════════════════════════════════════
+# COMPONENTS
+# ═══════════════════════════════════════════
 
 components:
+
   securitySchemes:
     bearerAuth:
       type: http
@@ -180,53 +456,59 @@ components:
       schema:
         type: string
         format: uuid
+    CompetenceId:
+      name: competenceId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    Size:
+      name: size
+      in: query
+      schema:
+        type: integer
+        default: 6
+        minimum: 1
+        maximum: 50
 
   responses:
+    BadRequest:
+      description: Données invalides
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
     Unauthorized:
       description: Token absent ou expiré
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ProblemDetail"
+            $ref: '#/components/schemas/ProblemDetail'
     Forbidden:
       description: Droits insuffisants
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ProblemDetail"
+            $ref: '#/components/schemas/ProblemDetail'
     NotFound:
       description: Ressource non trouvée
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ProblemDetail"
+            $ref: '#/components/schemas/ProblemDetail'
 
   schemas:
-    # Auth
-    LoginRequest:
-      type: object
-      required:
-        - username
-        - password
-      properties:
-        username:
-          type: string
-          example: admin
-        password:
-          type: string
-          example: admin123
 
-    LoginResponse:
-      type: object
-      properties:
-        token:
-          type: string
-          example: eyJhbGci...
-        username:
-          type: string
-          example: admin
+    # ── Enums ──────────────────────────────
 
-    # Aventurier
     Classe:
       type: string
       enum:
@@ -236,41 +518,84 @@ components:
         - GARDIEN
         - PREDICATEUR
 
+    Caracteristique:
+      type: string
+      enum:
+        - PHYSIQUE
+        - MENTAL
+        - PERCEPTION
+
+    Role:
+      type: string
+      enum:
+        - VIEWER
+        - ADMIN
+
+    # ── Auth ───────────────────────────────
+
+    RegisterRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        password:
+          type: string
+          format: password
+          minLength: 6
+        role:
+          $ref: '#/components/schemas/Role'
+          description: VIEWER par défaut si absent
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        username:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+
+    # ── Aventurier ─────────────────────────
+
     AventurierRequest:
       type: object
-      required:
-        - nom
-        - physique
-        - mental
-        - perception
-        - classe
+      required: [nom, physique, mental, perception, classe]
       properties:
         nom:
           type: string
           minLength: 1
           maxLength: 120
-          example: Adhakhan du clan de la Chope Fumante
         description:
           type: string
           maxLength: 500
-          example: Un guerrier redoutable
         physique:
           type: integer
           minimum: 1
           maximum: 20
-          example: 18
         mental:
           type: integer
           minimum: 1
           maximum: 20
-          example: 14
         perception:
           type: integer
           minimum: 1
           maximum: 20
-          example: 13
         classe:
-          $ref: "#/components/schemas/Classe"
+          $ref: '#/components/schemas/Classe'
 
     AventurierResponse:
       type: object
@@ -291,7 +616,7 @@ components:
         niveau:
           type: integer
         classe:
-          $ref: "#/components/schemas/Classe"
+          $ref: '#/components/schemas/Classe'
 
     PageAventurier:
       type: object
@@ -299,7 +624,7 @@ components:
         content:
           type: array
           items:
-            $ref: "#/components/schemas/AventurierResponse"
+            $ref: '#/components/schemas/AventurierResponse'
         page:
           type: integer
         size:
@@ -310,9 +635,156 @@ components:
         totalPages:
           type: integer
 
-    # Erreur
+    # ── Compétence ─────────────────────────
+
+    CaracteristiqueMin:
+      type: object
+      properties:
+        caracteristique:
+          $ref: '#/components/schemas/Caracteristique'
+        valeur:
+          type: integer
+          minimum: 1
+          maximum: 20
+
+    CompetenceRequest:
+      type: object
+      required: [nom]
+      properties:
+        nom:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        classeRequise:
+          $ref: '#/components/schemas/Classe'
+        niveauMinimum:
+          type: integer
+          minimum: 1
+        caracteristiqueMin:
+          $ref: '#/components/schemas/CaracteristiqueMin'
+        competencesRequises:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    CompetenceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nom:
+          type: string
+        description:
+          type: string
+        classeRequise:
+          $ref: '#/components/schemas/Classe'
+        niveauMinimum:
+          type: integer
+        caracteristiqueMin:
+          $ref: '#/components/schemas/CaracteristiqueMin'
+        competencesRequises:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetenceResumee'
+
+    CompetenceResumee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nom:
+          type: string
+
+    PageCompetence:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetenceResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    # ── Vues enrichies ─────────────────────
+
+    CompetencesDisponiblesResponse:
+      type: object
+      properties:
+        acquerables:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetenceResponse'
+        bloquees:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetenceBloquee'
+
+    CompetenceBloquee:
+      type: object
+      properties:
+        competence:
+          $ref: '#/components/schemas/CompetenceResponse'
+        prerequisManquants:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrerequisManquant'
+
+    CompetenceAventuriersResponse:
+      type: object
+      properties:
+        possesseurs:
+          type: array
+          items:
+            $ref: '#/components/schemas/AventurierResponse'
+        eligibles:
+          type: array
+          items:
+            $ref: '#/components/schemas/AventurierResponse'
+
+    # ── Erreurs enrichies ──────────────────
+
+    PrerequisManquant:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [NIVEAU, CLASSE, CARACTERISTIQUE, COMPETENCE]
+        requis:
+          type: string
+        actuel:
+          type: string
+        caracteristique:
+          $ref: '#/components/schemas/Caracteristique'
+
+    AventurierImpacte:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nom:
+          type: string
+        prerequisManquants:
+          type: array
+          items:
+            type: string
+
     ProblemDetail:
       type: object
+      description: Format RFC 7807
       properties:
         type:
           type: string
@@ -323,5 +795,23 @@ components:
           type: integer
         detail:
           type: string
-        instance:
-          type: string
+
+    ProblemDetailPrerequisManquants:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetail'
+        - type: object
+          properties:
+            prerequisManquants:
+              type: array
+              items:
+                $ref: '#/components/schemas/PrerequisManquant'
+
+    ProblemDetailCompetenceModification:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetail'
+        - type: object
+          properties:
+            aventuriersImpactes:
+              type: array
+              items:
+                $ref: '#/components/schemas/AventurierImpacte'
