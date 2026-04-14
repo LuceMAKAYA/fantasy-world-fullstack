@@ -1,0 +1,90 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Particules canvas */
+#bg-particles {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-header {
+  background: linear-gradient(180deg, rgba(8,6,23,0.98) 0%, rgba(20,16,50,0.95) 100%);
+  border-bottom: 1px solid var(--border-gold);
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-header h1 {
+  font-size: 1.4rem;
+  color: var(--gold);
+  text-shadow: 0 0 25px rgba(212,175,55,0.4);
+  letter-spacing: 0.15em;
+}
+
+.app-header h1 span {
+  color: var(--purple-light);
+  text-shadow: 0 0 20px rgba(192,132,252,0.4);
+}
+
+.app-header nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.app-header button[aria-current="page"] {
+  outline: 1px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.username {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  color: var(--gold);
+  padding: 0.28rem 0.7rem;
+  background: rgba(212,175,55,0.07);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+
+.app-main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.app-footer {
+  background: rgba(8,6,23,0.95);
+  border-top: 1px solid var(--border-gold);
+  text-align: center;
+  padding: 0.8rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .app-header { flex-direction: column; gap: 0.8rem; padding: 1rem; }
+  .app-header nav { width: 100%; flex-direction: column; }
+  .app-main { padding: 1rem; }
+}

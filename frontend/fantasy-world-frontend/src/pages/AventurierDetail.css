@@ -1,0 +1,96 @@
+.aventurier-detail { max-width: 680px; margin: 0 auto; }
+.btn-back { margin-bottom: 1.2rem; }
+
+.detail-card {
+  background: linear-gradient(145deg, #100e28 0%, #181535 100%);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(212,175,55,0.2);
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+}
+
+.detail-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  border-bottom: 1px solid rgba(212,175,55,0.15);
+  background: linear-gradient(135deg, #080617, #100e28);
+}
+
+.detail-emoji { font-size: 3.5rem; }
+.detail-title { flex: 1; }
+.detail-title h2 { font-size: 1.1rem; margin-bottom: 0.4rem; }
+
+.detail-niveau {
+  font-family: 'Cinzel', serif;
+  background: linear-gradient(135deg, #b8860b, #d4af37);
+  color: #080617;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  box-shadow: 0 0 12px rgba(212,175,55,0.3);
+}
+
+.aventurier-classe {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  background: rgba(124,58,237,0.12);
+  color: var(--purple-light);
+  border: 1px solid rgba(124,58,237,0.25);
+}
+
+.detail-section {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.detail-section h3 {
+  font-size: 0.85rem;
+  color: var(--purple-light);
+  margin-bottom: 1rem;
+  letter-spacing: 0.1em;
+}
+
+.detail-section p { color: var(--text-muted); font-style: italic; font-size: 0.95rem; }
+
+.detail-stats { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.detail-stat { display: flex; align-items: center; gap: 1rem; }
+
+.detail-stat-label { width: 120px; font-size: 0.88rem; color: var(--text); }
+
+.detail-stat-value {
+  font-family: 'Cinzel', serif;
+  width: 32px;
+  font-weight: 700;
+  color: var(--gold-light);
+  font-size: 1rem;
+}
+
+.stat-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple), var(--gold));
+  border-radius: 3px;
+  transition: width 1s ease;
+  box-shadow: 0 0 8px rgba(124,58,237,0.4);
+}
+
+.detail-error { text-align: center; padding: 2rem; color: var(--error); font-family: 'Cinzel', serif; }
+
+@media (max-width: 768px) {
+  .detail-header { flex-wrap: wrap; }
+  .detail-stat { flex-wrap: wrap; }
+  .detail-stat-label { width: 100%; }
+}

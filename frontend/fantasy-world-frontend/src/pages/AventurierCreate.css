@@ -1,0 +1,53 @@
+.aventurier-create { max-width: 580px; margin: 0 auto; }
+
+.aventurier-create h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 15px rgba(212,175,55,0.3);
+}
+
+.create-form {
+  background: linear-gradient(145deg, #100e28 0%, #181535 100%);
+  border: 1px solid rgba(124,58,237,0.25);
+  border-radius: var(--radius);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.create-form::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--gold), var(--purple));
+}
+
+.form-group { margin-bottom: 1.1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+
+.form-group label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+}
+
+.form-stats {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(124,58,237,0.15);
+  border-radius: var(--radius-sm);
+  padding: 1.1rem;
+  margin-bottom: 1.1rem;
+}
+
+.form-stats h3 { font-size: 0.82rem; color: var(--purple-light); margin-bottom: 0.9rem; letter-spacing: 0.08em; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+
+.form-actions { display: flex; justify-content: flex-end; margin-top: 1rem; }
+
+@media (max-width: 768px) {
+  .create-form { padding: 1.2rem; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .form-actions button { width: 100%; }
+}

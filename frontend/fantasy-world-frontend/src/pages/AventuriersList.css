@@ -1,0 +1,62 @@
+.aventuriers-list { width: 100%; }
+
+.aventuriers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(212,175,55,0.15);
+  position: relative;
+}
+
+.aventuriers-header::after {
+  content: '⟡';
+  position: absolute;
+  left: 50%;
+  bottom: -0.65rem;
+  transform: translateX(-50%);
+  color: var(--gold);
+  font-size: 0.75rem;
+  background: #080617;
+  padding: 0 0.5rem;
+}
+
+.aventuriers-header h2 {
+  font-size: 1.3rem;
+  color: var(--gold);
+  text-shadow: 0 0 15px rgba(212,175,55,0.3);
+}
+
+.aventuriers-count {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--gold);
+  padding: 0.22rem 0.7rem;
+  border: 1px solid rgba(212,175,55,0.25);
+  border-radius: 20px;
+  background: rgba(212,175,55,0.06);
+}
+
+.aventuriers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-dim);
+  background: rgba(16,14,40,0.8);
+  border-radius: var(--radius);
+  border: 1px solid rgba(124,58,237,0.2);
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .aventuriers-grid { grid-template-columns: 1fr; }
+  .aventuriers-header { flex-direction: column; gap: 0.8rem; text-align: center; }
+}
