@@ -59,3 +59,19 @@ export async function deleteAventurier(id) {
     throw new Error(error.message || "Erreur réseau");
   }
 }
+
+export async function updateAventurier(id, data) {
+  try {
+    const response = await apiClient(`${AVENTURIERS_URL}/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Erreur lors de la modification");
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || "Erreur réseau");
+  }
+}

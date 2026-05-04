@@ -1,17 +1,11 @@
 import { useState } from "react";
-import { login } from "../services/authService";
-import Register from "./Register";
-import "./Login.css";
+import { register } from "../services/authService";
+import "./Login.css"; // même style
 
-export default function Login({ onSuccess }) {
-  const [form, setForm] = useState({ username: "", password: "" });
+export default function Register({ onSuccess, onBack }) {
+  const [form, setForm] = useState({ username: "", password: "", role: "USER" });
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [showRegister, setShowRegister] = useState(false);
-
-  if (showRegister) {
-    return <Register onSuccess={onSuccess} onBack={() => setShowRegister(false)} />;
-  }
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,7 +16,7 @@ export default function Login({ onSuccess }) {
     if (status === "loading") return;
     try {
       setStatus("loading");
-      await login(form.username, form.password);
+      await register(form.username, form.password, form.role);
       setStatus("success");
       onSuccess();
     } catch (error) {
@@ -34,8 +28,8 @@ export default function Login({ onSuccess }) {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>⚔️ Fantasy World</h2>
-        <p className="login-subtitle">Connectez-vous pour continuer</p>
+        <h2>⚔️ Créer un compte</h2>
+        <p className="login-subtitle">Rejoignez Fantasy World</p>
 
         {status === "error" && (
           <div className="alert alert-error" role="alert">❌ {errorMessage}</div>
@@ -47,7 +41,7 @@ export default function Login({ onSuccess }) {
             <input
               id="username" name="username" type="text"
               value={form.username} onChange={handleChange}
-              required autoComplete="username" placeholder="Votre pseudo"
+              required minLength={3} placeholder="Votre pseudo"
             />
           </div>
           <div className="form-group">
@@ -55,20 +49,25 @@ export default function Login({ onSuccess }) {
             <input
               id="password" name="password" type="password"
               value={form.password} onChange={handleChange}
-              required autoComplete="current-password" placeholder="••••••••"
+              required minLength={6} placeholder="Minimum 6 caractères"
             />
+          </div>
+          <div className="form-group">
+            <label htmlFor="role">Rôle</label>
+            <select id="role" name="role" value={form.role} onChange={handleChange}>
+              <option value="USER">👁️ Viewer — Lecture seule</option>
+              <option value="ADMIN">⚔️ Admin — Tous les droits</option>
+            </select>
           </div>
           <button type="submit" className="btn-primary login-btn"
             disabled={status === "loading"}>
-            {status === "loading" ? "⏳ Connexion..." : "Se connecter"}
+            {status === "loading" ? "⏳ Création..." : "Créer mon compte"}
           </button>
         </form>
 
         <p className="login-switch">
-          Pas encore de compte ?{" "}
-          <button className="btn-link" onClick={() => setShowRegister(true)}>
-            S'inscrire
-          </button>
+          Déjà un compte ?{" "}
+          <button className="btn-link" onClick={onBack}>Se connecter</button>
         </p>
       </div>
     </div>

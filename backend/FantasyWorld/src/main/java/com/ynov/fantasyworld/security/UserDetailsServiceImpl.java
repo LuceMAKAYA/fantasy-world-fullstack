@@ -1,30 +1,37 @@
 package com.ynov.fantasyworld.security;
 
+import com.ynov.fantasyworld.infra.repository.UserEntity;
+import com.ynov.fantasyworld.infra.repository.UserJpaRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
+
+    private final UserJpaRepository userRepository;
+
+    public UserDetailsServiceImpl(UserJpaRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
-        return switch (username) {
-            case "admin" -> User.builder()
-                    .username("admin")
-                    .password("{noop}admin123")
-                    .roles("ADMIN", "USER")
-                    .build();
-            case "user" -> User.builder()
-                    .username("user")
-                    .password("{noop}user123")
-                    .roles("USER")
-                    .build();
-            default -> throw new UsernameNotFoundException(
-                    "Utilisateur non trouvé : " + username);
-        };
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "Utilisateur non trouvé : " + username));
+
+        return User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
+                .build();
+
     }
 }
