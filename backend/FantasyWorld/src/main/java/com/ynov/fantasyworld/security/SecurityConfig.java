@@ -84,6 +84,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/aventuriers/**")
                         .hasRole("ADMIN")
                         // Tout le reste → authentifié
+                        .requestMatchers(HttpMethod.GET, "/competences/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/competences/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/competences/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/competences/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
