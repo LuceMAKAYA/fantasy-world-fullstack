@@ -5,7 +5,7 @@ Application de gestion d'aventuriers Fantasy, construite en groupe dans le cadre
 ## 👥 Équipe
 
 - Luce Makaya
-- [Prénom Nom]
+- Salma Kacem
 - [Prénom Nom]
 
 ## 🗂️ Structure du monorepo
