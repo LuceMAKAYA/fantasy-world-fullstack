@@ -4,6 +4,10 @@ import AventuriersList from "./pages/AventuriersList";
 import AventurierDetail from "./pages/AventurierDetail";
 import AventurierCreate from "./pages/AventurierCreate";
 import AventurierEdit from "./pages/AventurierEdit";
+import CompetencesList from "./pages/CompetencesList";
+import CompetenceDetail from "./pages/CompetenceDetail";
+import CompetenceCreate from "./pages/CompetenceCreate";
+import CompetenceEdit from "./pages/CompetenceEdit";
 import Login from "./pages/Login";
 import AccessDenied from "./pages/AccessDenied";
 import "./index.css";
@@ -112,6 +116,10 @@ export default function App() {
         <h1>⚔ FANTASY <span>WORLD</span></h1>
         <nav role="navigation" aria-label="Navigation principale">
           <span className="username">⚜ {getUsername()}</span>
+
+          <button className="btn-secondary" onClick={() => navigateTo("competences")}>
+  Compétences
+</button>
           <button
             className="btn-secondary"
             onClick={() => navigateTo("list")}
@@ -138,34 +146,66 @@ export default function App() {
         </nav>
       </header>
 
-      <main className="app-main" role="main">
-        {page === "list" && (
-          <AventuriersList
-            onSelect={(id) => navigateTo("detail", id)}
-            canDelete={role === "ROLE_ADMIN"}
-          />
-        )}
-        {page === "detail" && (
-          <AventurierDetail
-            id={selectedId}
-            onBack={() => navigateTo("list")}
-            onEdit={role === "ROLE_ADMIN" ? () => navigateTo("edit", selectedId) : undefined}
-          />
-        )}
-        {page === "create" && role === "ROLE_ADMIN" && (
-          <AventurierCreate onSuccess={() => navigateTo("list")} />
-        )}
-        {page === "forbidden" && (
-          <AccessDenied onBack={() => navigateTo("list")} />
-        )}
-        {page === "edit" && role === "ROLE_ADMIN" && (
-  <AventurierEdit
-    id={selectedId}
-    onSuccess={() => navigateTo("list")}
-    onBack={() => navigateTo("detail", selectedId)}
-  />
-)}
-      </main>
+<main className="app-main" role="main">
+  {page === "competences" && (
+    <CompetencesList
+      onSelect={(id) => navigateTo("competenceDetail", id)}
+      onCreateClick={() => navigateTo("competenceCreate")}
+      canCreate={role === "ROLE_ADMIN"}
+    />
+  )}
+  {page === "competenceCreate" && role === "ROLE_ADMIN" && (
+    <CompetenceCreate
+      onSuccess={() => navigateTo("competences")}
+      onBack={() => navigateTo("competences")}
+    />
+  )}
+  {page === "competenceDetail" && (
+    <CompetenceDetail
+      id={selectedId}
+      onBack={() => navigateTo("competences")}
+      onEdit={() => navigateTo("competenceEdit", selectedId)}
+      canEdit={role === "ROLE_ADMIN"}
+    />
+  )}
+  {page === "competenceEdit" && role === "ROLE_ADMIN" && (
+    <CompetenceEdit
+      id={selectedId}
+      onSuccess={() => navigateTo("competences")}
+      onBack={() => navigateTo("competenceDetail", selectedId)}
+    />
+  )}
+
+  {page === "list" && (
+    <AventuriersList
+      onSelect={(id) => navigateTo("detail", id)}
+      canDelete={role === "ROLE_ADMIN"}
+    />
+  )}
+  {page === "detail" && (
+    <AventurierDetail
+      id={selectedId}
+      onBack={() => navigateTo("list")}
+      onEdit={role === "ROLE_ADMIN" ? () => navigateTo("edit", selectedId) : undefined}
+    />
+  )}
+  {page === "create" && role === "ROLE_ADMIN" && (
+    <AventurierCreate
+      onSuccess={() => navigateTo("list")}
+      onBack={() => navigateTo("list")}
+    />
+  )}
+  {page === "edit" && role === "ROLE_ADMIN" && (
+    <AventurierEdit
+      id={selectedId}
+      onSuccess={() => navigateTo("list")}
+      onBack={() => navigateTo("detail", selectedId)}
+    />
+  )}
+  {page === "forbidden" && (
+    <AccessDenied onBack={() => navigateTo("list")} />
+  )}
+</main>
 
       <footer className="app-footer" role="contentinfo">
         <p>⚔ Fantasy World — Full Stack Project</p>

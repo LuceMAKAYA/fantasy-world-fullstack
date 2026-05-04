@@ -10,7 +10,7 @@ const CLASSES = [
   { value: "PREDICATEUR", label: "📖 Prédicateur" },
 ];
 
-export default function AventurierCreate({ onSuccess }) {
+export default function AventurierCreate({ onSuccess, onBack }) {
   const [form, setForm] = useState({
     nom: "",
     description: "",
@@ -48,15 +48,20 @@ export default function AventurierCreate({ onSuccess }) {
     <div className="aventurier-create">
       <h2>⚔️ Nouvel Aventurier</h2>
 
+ <button className="btn-secondary" onClick={onBack}>
+          ← Retour
+          </button>
       {status === "error" && (
         <div className="alert alert-error">❌ {errorMessage}</div>
       )}
+      
 
       <form
         className="create-form"
         onSubmit={handleSubmit}
         aria-label="Formulaire de création d'aventurier"
       >
+        
         <div className="form-group">
           <label htmlFor="nom">Nom *</label>
           <input
@@ -148,6 +153,8 @@ export default function AventurierCreate({ onSuccess }) {
         </div>
 
         <div className="form-actions">
+         
+          
           <button
             type="submit"
             className="btn-primary"
@@ -156,6 +163,8 @@ export default function AventurierCreate({ onSuccess }) {
           >
             {status === "loading" ? "⏳ Création..." : "✅ Créer l'aventurier"}
           </button>
+
+          
         </div>
       </form>
     </div>
