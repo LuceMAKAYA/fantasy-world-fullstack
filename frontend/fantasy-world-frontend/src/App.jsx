@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { isAuthenticated, logout, getUsername, isAdmin } from "./services/authService";
+import { isAuthenticated, logout, getUsername, getRole } from "./services/authService";
 import AventuriersList from "./pages/AventuriersList";
 import AventurierDetail from "./pages/AventurierDetail";
 import AventurierCreate from "./pages/AventurierCreate";
+import AventurierEdit from "./pages/AventurierEdit";
 import Login from "./pages/Login";
 import AccessDenied from "./pages/AccessDenied";
 import "./index.css";
@@ -63,9 +64,10 @@ export default function App() {
   const [page, setPage] = useState("list");
   const [selectedId, setSelectedId] = useState(null);
   const [authenticated, setAuthenticated] = useState(isAuthenticated());
+  const [role, setRole] = useState(getRole());
 
   const navigateTo = (pageName, id = null) => {
-    if (pageName === "create" && !isAdmin()) {
+    if (pageName === "create" && role !== "ROLE_ADMIN") {
       setPage("forbidden");
       return;
     }
@@ -76,11 +78,13 @@ export default function App() {
   function handleLogout() {
     logout();
     setAuthenticated(false);
+    setRole(null);
     setPage("list");
   }
 
   function handleLoginSuccess() {
     setAuthenticated(true);
+    setRole(getRole());
     setPage("list");
   }
 
@@ -115,7 +119,7 @@ export default function App() {
           >
             Roster
           </button>
-          {isAdmin() && (
+          {role === "ROLE_ADMIN" && (
             <button
               className="btn-primary"
               onClick={() => navigateTo("create")}
@@ -138,21 +142,29 @@ export default function App() {
         {page === "list" && (
           <AventuriersList
             onSelect={(id) => navigateTo("detail", id)}
-            canDelete={isAdmin()}
+            canDelete={role === "ROLE_ADMIN"}
           />
         )}
         {page === "detail" && (
           <AventurierDetail
             id={selectedId}
             onBack={() => navigateTo("list")}
+            onEdit={role === "ROLE_ADMIN" ? () => navigateTo("edit", selectedId) : undefined}
           />
         )}
-        {page === "create" && isAdmin() && (
+        {page === "create" && role === "ROLE_ADMIN" && (
           <AventurierCreate onSuccess={() => navigateTo("list")} />
         )}
         {page === "forbidden" && (
           <AccessDenied onBack={() => navigateTo("list")} />
         )}
+        {page === "edit" && role === "ROLE_ADMIN" && (
+  <AventurierEdit
+    id={selectedId}
+    onSuccess={() => navigateTo("list")}
+    onBack={() => navigateTo("detail", selectedId)}
+  />
+)}
       </main>
 
       <footer className="app-footer" role="contentinfo">
