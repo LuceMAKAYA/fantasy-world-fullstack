@@ -1,10 +1,6 @@
 import { useState } from "react";
-<<<<<<< HEAD:frontend/fantasy-world-frontend/src/pages/Login/Login.jsx
 import { login } from "../../services/authService";
-=======
-import { login } from "../services/authService";
 import Register from "./Register";
->>>>>>> main:frontend/fantasy-world-frontend/src/pages/Login.jsx
 import "./Login.css";
 
 export default function Login({ onSuccess }) {
