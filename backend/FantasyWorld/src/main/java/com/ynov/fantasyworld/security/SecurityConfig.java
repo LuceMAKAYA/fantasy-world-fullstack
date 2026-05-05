@@ -74,15 +74,22 @@ public class SecurityConfig {
                         // Routes complètement publiques
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/h2/**").permitAll()
-                        // GET → USER et ADMIN
+
+                        // --- AVENTURIERS ---
                         .requestMatchers(HttpMethod.GET, "/aventuriers/**")
                         .hasAnyRole("USER", "ADMIN")
-                        // POST → ADMIN uniquement
                         .requestMatchers(HttpMethod.POST, "/aventuriers/**")
                         .hasRole("ADMIN")
-                        // DELETE → ADMIN uniquement
                         .requestMatchers(HttpMethod.DELETE, "/aventuriers/**")
                         .hasRole("ADMIN")
+
+                        // --- COMPETENCES ---
+                        .requestMatchers(HttpMethod.POST, "/competences/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/competences/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/competences/**")
+                        .hasRole("ADMIN")
+
                         // Tout le reste → authentifié
                         .anyRequest().authenticated()
                 )

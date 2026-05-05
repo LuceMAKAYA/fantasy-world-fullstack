@@ -1,19 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import { isAuthenticated, logout, getUsername, getRole } from "./services/authService";
-import AventuriersList from "./pages/AventuriersList";
-import AventurierDetail from "./pages/AventurierDetail";
-import AventurierCreate from "./pages/AventurierCreate";
 import AventurierEdit from "./pages/AventurierEdit";
-import Login from "./pages/Login";
-import AccessDenied from "./pages/AccessDenied";
+import AventuriersList from "./pages/AventurierList/AventuriersList";
+import AventurierDetail from "./pages/AventurierDetail/AventurierDetail";
+import AventurierCreate from "./pages/AventurierCreate/AventurierCreate";
+import CompetenceCreate from "./pages/CompetenceCreate/CompetenceCreate";
+import Login from "./pages/Login/Login";
+import AccessDenied from "./pages/AccessDenied/AccessDenied";
 import "./index.css";
 import "./styles/app.css";
+import Footer from "./components/Layout/Footer/Footer";
+import Header from "./components/Layout/Header/Header";
 
+// RÉINTÉGRATION DE LA FONCTION POUR ÉVITER LA REFERENCEERROR
 function ParticlesBackground() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let animId;
 
@@ -68,6 +73,9 @@ export default function App() {
 
   const navigateTo = (pageName, id = null) => {
     if (pageName === "create" && role !== "ROLE_ADMIN") {
+    // Mise à jour de la sécurité pour inclure la page de compétence
+    const protectedPages = ["create", "competence-create"];
+    if (protectedPages.includes(pageName) && !isAdmin()) {
       setPage("forbidden");
       return;
     }
@@ -137,6 +145,13 @@ export default function App() {
           </button>
         </nav>
       </header>
+      <Header 
+      getUsername={getUsername} // <-- Vérifie que cette ligne existe bien !
+      isAdmin={isAdmin}
+      navigateTo={navigateTo}
+      handleLogout={handleLogout}
+      page={page}
+    />
 
       <main className="app-main" role="main">
         {page === "list" && (
@@ -155,6 +170,10 @@ export default function App() {
         {page === "create" && role === "ROLE_ADMIN" && (
           <AventurierCreate onSuccess={() => navigateTo("list")} />
         )}
+        {/* Rendu de la page compétence rajouté */}
+        {page === "competence-create" && isAdmin() && (
+          <CompetenceCreate onSuccess={() => navigateTo("list")} />
+        )}
         {page === "forbidden" && (
           <AccessDenied onBack={() => navigateTo("list")} />
         )}
@@ -167,9 +186,7 @@ export default function App() {
 )}
       </main>
 
-      <footer className="app-footer" role="contentinfo">
-        <p>⚔ Fantasy World — Full Stack Project</p>
-      </footer>
+      <Footer/>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAventurierById } from "../services/aventurierService";
+import { getAventurierById } from "../../services/aventurierService";
 import "./AventurierDetail.css";
 
 const CLASSE_EMOJI = {

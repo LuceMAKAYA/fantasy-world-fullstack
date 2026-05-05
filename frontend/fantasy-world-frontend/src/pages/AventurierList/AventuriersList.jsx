@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { getAllAventuriers, deleteAventurier } from "../services/aventurierService";
-import AventurierCard from "../components/aventuriers/AventurierCard";
-import Pagination from "../components/aventuriers/Pagination";
+import { getAllAventuriers, deleteAventurier } from "../../services/aventurierService";
+import AventurierCard from "../../components/aventuriers/AventurierCard";
+import Pagination from "../../components/Common/Pagination/Pagination";
 import "./AventuriersList.css";
 
 export default function AventuriersList({ onSelect, canDelete = false }) {
