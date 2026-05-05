@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAventurierById, updateAventurier } from "../services/aventurierService";
-import "./AventurierCreate.css";
+import "./AventurierCreate/AventurierCreate.css";
 
 const CLASSES = [
   { value: "MAITRE_D_ARMES", label: "⚔️ Maître d'armes" },

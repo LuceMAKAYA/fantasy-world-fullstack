@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { login } from "../../services/authService";
-import Register from "./Register";
+import Register from "../Register";
 import "./Login.css";
 
 export default function Login({ onSuccess }) {

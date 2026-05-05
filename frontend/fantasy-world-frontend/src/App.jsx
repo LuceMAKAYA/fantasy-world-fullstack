@@ -7,12 +7,11 @@ import AventurierCreate from "./pages/AventurierCreate/AventurierCreate";
 import CompetenceCreate from "./pages/CompetenceCreate/CompetenceCreate";
 import Login from "./pages/Login/Login";
 import AccessDenied from "./pages/AccessDenied/AccessDenied";
-import "./index.css";
-import "./styles/app.css";
 import Footer from "./components/Layout/Footer/Footer";
 import Header from "./components/Layout/Header/Header";
+import "./index.css";
+import "./styles/app.css";
 
-// RÉINTÉGRATION DE LA FONCTION POUR ÉVITER LA REFERENCEERROR
 function ParticlesBackground() {
   const canvasRef = useRef(null);
 
@@ -71,123 +70,94 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(isAuthenticated());
   const [role, setRole] = useState(getRole());
 
+  // Correction de la fonction navigateTo
   const navigateTo = (pageName, id = null) => {
-    if (pageName === "create" && role !== "ROLE_ADMIN") {
-      // Mise à jour de la sécurité pour inclure la page de compétence
-      const protectedPages = ["create", "competence-create"];
-      if (protectedPages.includes(pageName) && !isAdmin()) {
-        setPage("forbidden");
-        return;
-      }
+    const protectedPages = ["create", "competence-create", "edit"];
+    
+    if (protectedPages.includes(pageName) && role !== "ROLE_ADMIN") {
+      setPage("forbidden");
+    } else {
       setPage(pageName);
       setSelectedId(id);
-    };
-
-    function handleLogout() {
-      logout();
-      setAuthenticated(false);
-      setRole(null);
-      setPage("list");
     }
+  };
 
-    function handleLoginSuccess() {
-      setAuthenticated(true);
-      setRole(getRole());
-      setPage("list");
-    }
+  function handleLogout() {
+    logout();
+    setAuthenticated(false);
+    setRole(null);
+    setPage("list");
+  }
 
-    if (!authenticated) {
-      return (
-        <div className="app">
-          <ParticlesBackground />
-          <header className="app-header" role="banner">
-            <h1>⚔ FANTASY <span>WORLD</span></h1>
-          </header>
-          <main className="app-main" role="main">
-            <Login onSuccess={handleLoginSuccess} />
-          </main>
-          <footer className="app-footer" role="contentinfo">
-            <p>⚔ Fantasy World — Full Stack Project</p>
-          </footer>
-        </div>
-      );
-    }
+  function handleLoginSuccess() {
+    setAuthenticated(true);
+    setRole(getRole());
+    setPage("list");
+  }
 
+  // Écran de connexion
+  if (!authenticated) {
     return (
       <div className="app">
         <ParticlesBackground />
-        <header className="app-header" role="banner">
+        <header className="app-header">
           <h1>⚔ FANTASY <span>WORLD</span></h1>
-          <nav role="navigation" aria-label="Navigation principale">
-            <span className="username">⚜ {getUsername()}</span>
-            <button
-              className="btn-secondary"
-              onClick={() => navigateTo("list")}
-              aria-current={page === "list" ? "page" : undefined}
-            >
-              Roster
-            </button>
-            {role === "ROLE_ADMIN" && (
-              <button
-                className="btn-primary"
-                onClick={() => navigateTo("create")}
-                aria-current={page === "create" ? "page" : undefined}
-              >
-                + Recruit
-              </button>
-            )}
-            <button
-              className="btn-danger"
-              onClick={handleLogout}
-              aria-label="Se déconnecter"
-            >
-              ⎋ Leave
-            </button>
-          </nav>
         </header>
-        <Header
-          getUsername={getUsername} // <-- Vérifie que cette ligne existe bien !
-          isAdmin={isAdmin}
-          navigateTo={navigateTo}
-          handleLogout={handleLogout}
-          page={page}
-        />
-
-        <main className="app-main" role="main">
-          {page === "list" && (
-            <AventuriersList
-              onSelect={(id) => navigateTo("detail", id)}
-              canDelete={role === "ROLE_ADMIN"}
-            />
-          )}
-          {page === "detail" && (
-            <AventurierDetail
-              id={selectedId}
-              onBack={() => navigateTo("list")}
-              onEdit={role === "ROLE_ADMIN" ? () => navigateTo("edit", selectedId) : undefined}
-            />
-          )}
-          {page === "create" && role === "ROLE_ADMIN" && (
-            <AventurierCreate onSuccess={() => navigateTo("list")} />
-          )}
-          {/* Rendu de la page compétence rajouté */}
-          {page === "competence-create" && isAdmin() && (
-            <CompetenceCreate onSuccess={() => navigateTo("list")} />
-          )}
-          {page === "forbidden" && (
-            <AccessDenied onBack={() => navigateTo("list")} />
-          )}
-          {page === "edit" && role === "ROLE_ADMIN" && (
-            <AventurierEdit
-              id={selectedId}
-              onSuccess={() => navigateTo("list")}
-              onBack={() => navigateTo("detail", selectedId)}
-            />
-          )}
+        <main className="app-main">
+          <Login onSuccess={handleLoginSuccess} />
         </main>
-
         <Footer />
       </div>
     );
   }
+
+  // Application principale (Authentifiée)
+  return (
+    <div className="app">
+      <ParticlesBackground />
+      
+      {/* Utilisation du composant Header unique */}
+      <Header
+        getUsername={getUsername}
+        role={role} // On passe le role au lieu de isAdmin
+        navigateTo={navigateTo}
+        handleLogout={handleLogout}
+        page={page}
+      />
+
+      <main className="app-main" role="main">
+        {page === "list" && (
+          <AventuriersList
+            onSelect={(id) => navigateTo("detail", id)}
+            canDelete={role === "ROLE_ADMIN"}
+          />
+        )}
+        {page === "detail" && (
+          <AventurierDetail
+            id={selectedId}
+            onBack={() => navigateTo("list")}
+            onEdit={role === "ROLE_ADMIN" ? () => navigateTo("edit", selectedId) : undefined}
+          />
+        )}
+        {page === "create" && role === "ROLE_ADMIN" && (
+          <AventurierCreate onSuccess={() => navigateTo("list")} />
+        )}
+        {page === "competence-create" && role === "ROLE_ADMIN" && (
+          <CompetenceCreate onSuccess={() => navigateTo("list")} />
+        )}
+        {page === "forbidden" && (
+          <AccessDenied onBack={() => navigateTo("list")} />
+        )}
+        {page === "edit" && role === "ROLE_ADMIN" && (
+          <AventurierEdit
+            id={selectedId}
+            onSuccess={() => navigateTo("list")}
+            onBack={() => navigateTo("detail", selectedId)}
+          />
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
 }

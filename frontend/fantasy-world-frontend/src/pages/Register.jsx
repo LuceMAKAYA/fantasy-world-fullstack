@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { register } from "../services/authService";
-import "./Login.css"; // même style
+import "./Login/Login.css"; // même style
 
 export default function Register({ onSuccess, onBack }) {
   const [form, setForm] = useState({ username: "", password: "", role: "USER" });
