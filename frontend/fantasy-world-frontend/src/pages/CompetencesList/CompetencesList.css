@@ -1,10 +1,22 @@
-.competences-list { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+/* ── CompetencesList ── */
+.competences-list {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
 
+/* En-tête */
 .competences-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+.competences-header h2 {
+  font-size: 1.5rem;
 }
 
 .competences-header-right {
@@ -15,69 +27,91 @@
 
 .competences-count {
   font-family: 'Cinzel', serif;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   border: 1px solid var(--border-gold);
-  padding: 0.3rem 0.8rem;
+  padding: 0.3rem 0.9rem;
   border-radius: 20px;
+  background: rgba(212,175,55,0.06);
 }
 
+/* Grille de cartes */
 .competences-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2rem;
 }
 
+/* Carte */
 .competence-card {
   background: var(--surface);
   border: 1px solid var(--border-purple);
   border-radius: var(--radius);
-  padding: 1.2rem;
+  padding: 1.3rem 1.4rem;
   cursor: pointer;
   transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.competence-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(212,175,55,0.04) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .competence-card:hover {
   border-color: var(--purple-light);
-  box-shadow: 0 4px 20px var(--border-purple);
-  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(124,58,237,0.3), 0 0 0 1px rgba(192,132,252,0.15);
+  transform: translateY(-3px);
+  background: var(--surface-light);
 }
 
+/* En-tête de carte */
 .competence-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.5rem;
-  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  gap: 0.6rem;
 }
 
 .competence-card-header h3 {
-  font-size: 0.9rem;
-  color: var(--gold);
+  font-size: 0.95rem;
+  color: var(--gold-light);
+  line-height: 1.3;
 }
 
+/* Badge classe */
 .competence-classe {
   font-size: 0.65rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 10px;
-  background: var(--border-purple);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  background: rgba(124,58,237,0.25);
   color: var(--purple-light);
   white-space: nowrap;
   font-family: 'Cinzel', serif;
+  border: 1px solid rgba(192,132,252,0.3);
+  flex-shrink: 0;
 }
 
+/* Description */
 .competence-desc {
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   font-style: italic;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
+/* Tags prérequis */
 .competence-prereqs {
   display: flex;
   flex-wrap: wrap;
@@ -86,31 +120,42 @@
 
 .prereq-tag {
   font-size: 0.65rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 10px;
-  background: rgba(212,175,55,0.08);
-  color: var(--gold);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  background: rgba(212,175,55,0.1);
+  color: var(--gold-light);
   border: 1px solid var(--border-gold);
   font-family: 'Cinzel', serif;
 }
 
 .prereq-libre {
-  background: rgba(16,185,129,0.08);
-  color: #10b981;
-  border-color: rgba(16,185,129,0.25);
+  background: rgba(16,185,129,0.1);
+  color: #34d399;
+  border-color: rgba(16,185,129,0.3);
 }
 
+/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 1.2rem;
   font-family: 'Cinzel', serif;
   font-size: 0.8rem;
+  color: var(--text-muted);
+  padding-top: 0.5rem;
 }
 
+/* État vide */
 .empty-state {
   text-align: center;
-  padding: 3rem;
+  padding: 4rem 2rem;
   color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+.empty-state p {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
 }

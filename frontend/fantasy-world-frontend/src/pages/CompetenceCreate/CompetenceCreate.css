@@ -1,87 +1,164 @@
+/* ── CompetenceCreate / formulaires ── */
 .create-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 30px;
-    background: rgba(15, 15, 25, 0.85);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
+  max-width: 620px;
+  margin: 2.5rem auto;
+  padding: 2.2rem 2.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,175,55,0.08);
+  position: relative;
+  overflow: hidden;
 }
 
+/* Lueur décorative en haut */
+.create-container::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 120px;
+  background: radial-gradient(ellipse, rgba(212,175,55,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Titre */
 .create-container h2 {
-    color: #d4af37;
-    font-family: 'Cinzel', serif; /* Ou ta police fantasy habituelle */
-    text-align: center;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-    padding-bottom: 10px;
+  text-align: center;
+  font-size: 1.15rem;
+  margin-bottom: 0.4rem;
+  color: var(--gold-light);
+  letter-spacing: 0.12em;
 }
 
+.create-container .form-subtitle {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-bottom: 2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+/* Formulaire */
 .competence-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
 }
 
+/* Groupe champ */
 .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
 }
 
 .form-group label {
-    color: #a0a0a0;
-    font-size: 0.9rem;
-    font-weight: bold;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.form-group input, 
-.form-group textarea, 
-.form-group select {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    padding: 12px;
-    color: white;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+/* Les inputs héritent du global, on peaufine juste le textarea */
+textarea {
+  resize: vertical;
+  min-height: 90px;
 }
 
-.form-group input:focus, 
-.form-group textarea:focus, 
-.form-group select:focus {
-    outline: none;
-    border-color: #7c3aed;
-    background: rgba(124, 58, 237, 0.1);
-}
-
+/* Bloc caractéristiques (double colonne) */
 .carac-group {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 15px;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px dashed rgba(212, 175, 55, 0.2);
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  background: rgba(0,0,0,0.18);
+  padding: 1.2rem;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-gold);
+  position: relative;
 }
 
+.carac-group::before {
+  content: 'Caractéristique requise';
+  position: absolute;
+  top: -0.55rem;
+  left: 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: var(--gold);
+  background: var(--surface);
+  padding: 0 0.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Séparateur de section */
+.form-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.form-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-purple);
+}
+
+/* Bouton de soumission */
 .btn-submit {
-    background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-    color: #000;
-    border: none;
-    padding: 15px;
-    border-radius: 6px;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: transform 0.2s, box-shadow 0.2s;
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 60%, var(--gold-light) 100%);
+  color: #1a1530;
+  border: none;
+  padding: 0.85rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.25s;
+  box-shadow: 0 2px 14px rgba(212,175,55,0.3);
+  width: 100%;
 }
 
-.btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(212,175,55,0.5);
+  filter: brightness(1.08);
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Actions bas de formulaire (Valider + Annuler côte à côte) */
+.form-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.form-actions .btn-submit { flex: 1; }
+.form-actions .btn-secondary { flex-shrink: 0; }
+
+/* Messages d'erreur inline */
+.field-error {
+  font-size: 0.82rem;
+  color: #fca5a5;
+  font-style: italic;
 }

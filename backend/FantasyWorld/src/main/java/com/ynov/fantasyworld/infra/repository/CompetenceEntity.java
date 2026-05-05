@@ -1,22 +1,47 @@
-package com.ynov.fantasyworld.domain;
+package com.ynov.fantasyworld.infra.repository;
 
+import com.ynov.fantasyworld.domain.CaracteristiqueMin;
+import com.ynov.fantasyworld.domain.Classe;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Competence {
+@Entity
+@Table(name = "competences")
+public class CompetenceEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String nom;
-    private String description;
-    private Classe classeRequise;
-    private Integer niveauMinimum;
-    private CaracteristiqueMin caracteristiqueMin;
-    private List<Competence> competencesRequises = new ArrayList<>();
 
-    public Competence(String nom, String description, Classe classeRequise,
-                      Integer niveauMinimum, CaracteristiqueMin caracteristiqueMin,
-                      List<Competence> competencesRequises) {
+    @Column(nullable = false)
+    private String nom;
+
+    @Column(length = 500)
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private Classe classeRequise;
+
+    private Integer niveauMinimum;
+
+    @Embedded
+    private CaracteristiqueMin caracteristiqueMin;
+
+    @ManyToMany
+    @JoinTable(
+            name = "competences_prerequises",
+            joinColumns = @JoinColumn(name = "competence_id"),
+            inverseJoinColumns = @JoinColumn(name = "prerequis_id")
+    )
+    private List<CompetenceEntity> competencesRequises = new ArrayList<>();
+
+    protected CompetenceEntity() {}
+
+    public CompetenceEntity(String nom, String description, Classe classeRequise,
+                            Integer niveauMinimum, CaracteristiqueMin caracteristiqueMin,
+                            List<CompetenceEntity> competencesRequises) {
         this.nom = nom;
         this.description = description;
         this.classeRequise = classeRequise;
@@ -31,7 +56,7 @@ public class Competence {
     public Classe getClasseRequise() { return classeRequise; }
     public Integer getNiveauMinimum() { return niveauMinimum; }
     public CaracteristiqueMin getCaracteristiqueMin() { return caracteristiqueMin; }
-    public List<Competence> getCompetencesRequises() { return competencesRequises; }
+    public List<CompetenceEntity> getCompetencesRequises() { return competencesRequises; }
 
     public void setId(UUID id) { this.id = id; }
     public void setNom(String nom) { this.nom = nom; }
@@ -39,5 +64,5 @@ public class Competence {
     public void setClasseRequise(Classe classeRequise) { this.classeRequise = classeRequise; }
     public void setNiveauMinimum(Integer niveauMinimum) { this.niveauMinimum = niveauMinimum; }
     public void setCaracteristiqueMin(CaracteristiqueMin caracteristiqueMin) { this.caracteristiqueMin = caracteristiqueMin; }
-    public void setCompetencesRequises(List<Competence> competencesRequises) { this.competencesRequises = competencesRequises; }
+    public void setCompetencesRequises(List<CompetenceEntity> competencesRequises) { this.competencesRequises = competencesRequises; }
 }
