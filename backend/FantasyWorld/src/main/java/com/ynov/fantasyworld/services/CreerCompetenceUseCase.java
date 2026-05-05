@@ -6,6 +6,7 @@ import com.ynov.fantasyworld.infra.controller.dto.CompetenceRequestDto;
 import com.ynov.fantasyworld.infra.controller.dto.CompetenceResponseDto;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,13 +19,11 @@ public class CreerCompetenceUseCase {
     }
 
     public CompetenceResponseDto executer(CompetenceRequestDto dto) {
-        // 1. On récupère les objets Competence correspondant aux IDs de prérequis
-        List<Competence> prerequis = List.of();
+        List<Competence> prerequis = new ArrayList<>();
         if (dto.competencesRequises() != null && !dto.competencesRequises().isEmpty()) {
-            prerequis = repository.findAllById(dto.competencesRequises());
+            prerequis = new ArrayList<>(repository.findAllById(dto.competencesRequises()));
         }
 
-        // 2. On instancie l'objet de domaine Competence
         Competence competence = new Competence(
                 dto.nom(),
                 dto.description(),
@@ -34,10 +33,7 @@ public class CreerCompetenceUseCase {
                 prerequis
         );
 
-        // 3. Sauvegarde en base de données
         Competence saved = repository.save(competence);
-
-        // 4. On retourne le DTO de réponse (id, nom, description)
         return CompetenceResponseDto.from(saved);
     }
 }
