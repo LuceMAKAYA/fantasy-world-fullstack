@@ -73,120 +73,121 @@ export default function App() {
 
   const navigateTo = (pageName, id = null) => {
     if (pageName === "create" && role !== "ROLE_ADMIN") {
-    // Mise à jour de la sécurité pour inclure la page de compétence
-    const protectedPages = ["create", "competence-create"];
-    if (protectedPages.includes(pageName) && !isAdmin()) {
-      setPage("forbidden");
-      return;
+      // Mise à jour de la sécurité pour inclure la page de compétence
+      const protectedPages = ["create", "competence-create"];
+      if (protectedPages.includes(pageName) && !isAdmin()) {
+        setPage("forbidden");
+        return;
+      }
+      setPage(pageName);
+      setSelectedId(id);
+    };
+
+    function handleLogout() {
+      logout();
+      setAuthenticated(false);
+      setRole(null);
+      setPage("list");
     }
-    setPage(pageName);
-    setSelectedId(id);
-  };
 
-  function handleLogout() {
-    logout();
-    setAuthenticated(false);
-    setRole(null);
-    setPage("list");
-  }
+    function handleLoginSuccess() {
+      setAuthenticated(true);
+      setRole(getRole());
+      setPage("list");
+    }
 
-  function handleLoginSuccess() {
-    setAuthenticated(true);
-    setRole(getRole());
-    setPage("list");
-  }
+    if (!authenticated) {
+      return (
+        <div className="app">
+          <ParticlesBackground />
+          <header className="app-header" role="banner">
+            <h1>⚔ FANTASY <span>WORLD</span></h1>
+          </header>
+          <main className="app-main" role="main">
+            <Login onSuccess={handleLoginSuccess} />
+          </main>
+          <footer className="app-footer" role="contentinfo">
+            <p>⚔ Fantasy World — Full Stack Project</p>
+          </footer>
+        </div>
+      );
+    }
 
-  if (!authenticated) {
     return (
       <div className="app">
         <ParticlesBackground />
         <header className="app-header" role="banner">
           <h1>⚔ FANTASY <span>WORLD</span></h1>
+          <nav role="navigation" aria-label="Navigation principale">
+            <span className="username">⚜ {getUsername()}</span>
+            <button
+              className="btn-secondary"
+              onClick={() => navigateTo("list")}
+              aria-current={page === "list" ? "page" : undefined}
+            >
+              Roster
+            </button>
+            {role === "ROLE_ADMIN" && (
+              <button
+                className="btn-primary"
+                onClick={() => navigateTo("create")}
+                aria-current={page === "create" ? "page" : undefined}
+              >
+                + Recruit
+              </button>
+            )}
+            <button
+              className="btn-danger"
+              onClick={handleLogout}
+              aria-label="Se déconnecter"
+            >
+              ⎋ Leave
+            </button>
+          </nav>
         </header>
+        <Header
+          getUsername={getUsername} // <-- Vérifie que cette ligne existe bien !
+          isAdmin={isAdmin}
+          navigateTo={navigateTo}
+          handleLogout={handleLogout}
+          page={page}
+        />
+
         <main className="app-main" role="main">
-          <Login onSuccess={handleLoginSuccess} />
+          {page === "list" && (
+            <AventuriersList
+              onSelect={(id) => navigateTo("detail", id)}
+              canDelete={role === "ROLE_ADMIN"}
+            />
+          )}
+          {page === "detail" && (
+            <AventurierDetail
+              id={selectedId}
+              onBack={() => navigateTo("list")}
+              onEdit={role === "ROLE_ADMIN" ? () => navigateTo("edit", selectedId) : undefined}
+            />
+          )}
+          {page === "create" && role === "ROLE_ADMIN" && (
+            <AventurierCreate onSuccess={() => navigateTo("list")} />
+          )}
+          {/* Rendu de la page compétence rajouté */}
+          {page === "competence-create" && isAdmin() && (
+            <CompetenceCreate onSuccess={() => navigateTo("list")} />
+          )}
+          {page === "forbidden" && (
+            <AccessDenied onBack={() => navigateTo("list")} />
+          )}
+          {page === "edit" && role === "ROLE_ADMIN" && (
+            <AventurierEdit
+              id={selectedId}
+              onSuccess={() => navigateTo("list")}
+              onBack={() => navigateTo("detail", selectedId)}
+            />
+          )}
         </main>
-        <footer className="app-footer" role="contentinfo">
-          <p>⚔ Fantasy World — Full Stack Project</p>
-        </footer>
+
+        <Footer />
       </div>
     );
   }
-
-  return (
-    <div className="app">
-      <ParticlesBackground />
-      <header className="app-header" role="banner">
-        <h1>⚔ FANTASY <span>WORLD</span></h1>
-        <nav role="navigation" aria-label="Navigation principale">
-          <span className="username">⚜ {getUsername()}</span>
-          <button
-            className="btn-secondary"
-            onClick={() => navigateTo("list")}
-            aria-current={page === "list" ? "page" : undefined}
-          >
-            Roster
-          </button>
-          {role === "ROLE_ADMIN" && (
-            <button
-              className="btn-primary"
-              onClick={() => navigateTo("create")}
-              aria-current={page === "create" ? "page" : undefined}
-            >
-              + Recruit
-            </button>
-          )}
-          <button
-            className="btn-danger"
-            onClick={handleLogout}
-            aria-label="Se déconnecter"
-          >
-            ⎋ Leave
-          </button>
-        </nav>
-      </header>
-      <Header 
-      getUsername={getUsername} // <-- Vérifie que cette ligne existe bien !
-      isAdmin={isAdmin}
-      navigateTo={navigateTo}
-      handleLogout={handleLogout}
-      page={page}
-    />
-
-      <main className="app-main" role="main">
-        {page === "list" && (
-          <AventuriersList
-            onSelect={(id) => navigateTo("detail", id)}
-            canDelete={role === "ROLE_ADMIN"}
-          />
-        )}
-        {page === "detail" && (
-          <AventurierDetail
-            id={selectedId}
-            onBack={() => navigateTo("list")}
-            onEdit={role === "ROLE_ADMIN" ? () => navigateTo("edit", selectedId) : undefined}
-          />
-        )}
-        {page === "create" && role === "ROLE_ADMIN" && (
-          <AventurierCreate onSuccess={() => navigateTo("list")} />
-        )}
-        {/* Rendu de la page compétence rajouté */}
-        {page === "competence-create" && isAdmin() && (
-          <CompetenceCreate onSuccess={() => navigateTo("list")} />
-        )}
-        {page === "forbidden" && (
-          <AccessDenied onBack={() => navigateTo("list")} />
-        )}
-        {page === "edit" && role === "ROLE_ADMIN" && (
-  <AventurierEdit
-    id={selectedId}
-    onSuccess={() => navigateTo("list")}
-    onBack={() => navigateTo("detail", selectedId)}
-  />
-)}
-      </main>
-
-      <Footer/>
-    </div>
-  );
 }
