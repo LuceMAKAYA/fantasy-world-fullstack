@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCompetenceById } from "../../services/competenceService";
+import { getCompetenceById, deleteCompetence } from "../../services/competenceService";
 import "./CompetenceDetail.css";
 
 const CLASSE_LABEL = {
@@ -10,25 +10,50 @@ const CLASSE_LABEL = {
   PREDICATEUR: "📖 Prédicateur",
 };
 
-export default function CompetenceDetail({ id, onBack, onEdit }) {
+export default function CompetenceDetail({ id, onBack, onEdit, role }) {
   const [competence, setCompetence] = useState(null);
   const [status, setStatus] = useState("loading");
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
+    if (!id) return;
+    
     getCompetenceById(id)
-      .then((data) => { setCompetence(data); setStatus("success"); })
-      .catch((err) => { setErrorMessage(err.message); setStatus("error"); });
+      .then((data) => { 
+        setCompetence(data); 
+        setStatus("success"); 
+      })
+      .catch((err) => { 
+        setErrorMessage(err.message); 
+        setStatus("error"); 
+      });
   }, [id]);
 
-  if (status === "loading") return <div className="loader">⏳ Chargement...</div>;
+  const handleDelete = async () => {
+    if (window.confirm(`Voulez-vous vraiment effacer "${competence?.nom}" du Grimoire ?`)) {
+      try {
+        await deleteCompetence(id);
+        alert("Savoir ancestral supprimé !");
+        onBack(); // Retourne à la liste
+      } catch (err) {
+        alert("Erreur : Impossible de supprimer la compétence.");
+      }
+    }
+  };
 
+  // 1. Gestion du chargement
+  if (status === "loading") return <div className="loader">⏳ Chargement du savoir...</div>;
+
+  // 2. Gestion de l'erreur
   if (status === "error") return (
     <div className="detail-error">
       <p>❌ {errorMessage}</p>
       <button className="btn-secondary" onClick={onBack}>← Retour</button>
     </div>
   );
+
+  // 3. Sécurité Anti-Crash : Si competence est encore null malgré le status success
+  if (!competence) return null;
 
   return (
     <div className="competence-detail">
@@ -44,8 +69,17 @@ export default function CompetenceDetail({ id, onBack, onEdit }) {
               </span>
             )}
           </div>
-          {onEdit && (
-            <button className="btn-primary" onClick={onEdit}>✏️ Modifier</button>
+          
+          {/* Actions réservées aux ADMINS */}
+          {role === "ROLE_ADMIN" && (
+            <div className="detail-actions">
+              {onEdit && (
+                <button className="btn-primary" onClick={onEdit}>✏️ Modifier</button>
+              )}
+              <button className="btn-danger" onClick={handleDelete}>
+                🗑 Supprimer
+              </button>
+            </div>
           )}
         </div>
 
@@ -59,7 +93,7 @@ export default function CompetenceDetail({ id, onBack, onEdit }) {
         <div className="detail-section">
           <h3>Prérequis</h3>
           {!competence.niveauMinimum && !competence.classeRequise &&
-           !competence.caracteristiqueMin && competence.competencesRequises?.length === 0 ? (
+           !competence.caracteristiqueMin && (!competence.competencesRequises || competence.competencesRequises.length === 0) ? (
             <p className="prereq-libre">✅ Accessible à tous — aucun prérequis</p>
           ) : (
             <div className="prereqs-list">

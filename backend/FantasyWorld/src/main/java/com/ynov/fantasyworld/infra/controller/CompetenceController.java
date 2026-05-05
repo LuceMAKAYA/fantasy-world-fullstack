@@ -7,6 +7,7 @@ import com.ynov.fantasyworld.services.CreerCompetenceUseCase;
 import com.ynov.fantasyworld.services.ListerCompetencesUseCase;
 import com.ynov.fantasyworld.services.ModifierCompetenceUseCase;
 import com.ynov.fantasyworld.services.ObtenirCompetenceUseCase;
+import com.ynov.fantasyworld.services.SupprimerCompetenceUseCase; // Import ajouté
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,38 +17,31 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/competences")
-@CrossOrigin(origins = "http://localhost:5173") // Indispensable pour ton Front sur Mac
+@CrossOrigin(origins = "http://localhost:5173")
 public class CompetenceController {
 
     private final CreerCompetenceUseCase creerCompetenceUseCase;
     private final ListerCompetencesUseCase listerUseCase;
     private final ObtenirCompetenceUseCase obtenirUseCase;
     private final ModifierCompetenceUseCase modifierUseCase;
+    private final SupprimerCompetenceUseCase supprimerUseCase; // Ajouté
 
 
     public CompetenceController(CreerCompetenceUseCase creerCompetenceUseCase,
                                 ListerCompetencesUseCase listerUseCase,
                                 ObtenirCompetenceUseCase obtenirUseCase,
-                                        ModifierCompetenceUseCase modifierUseCase) {
+                                ModifierCompetenceUseCase modifierUseCase,
+                                SupprimerCompetenceUseCase supprimerUseCase) { // Injecté ici
         this.creerCompetenceUseCase = creerCompetenceUseCase;
         this.listerUseCase = listerUseCase;
         this.obtenirUseCase = obtenirUseCase;
         this.modifierUseCase = modifierUseCase;
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<CompetenceResponseDto> modifier(
-            @PathVariable UUID id,
-            @RequestBody @Valid CompetenceRequestDto dto) {
-        return ResponseEntity.ok(modifierUseCase.executer(id, dto));
+        this.supprimerUseCase = supprimerUseCase;
     }
 
     @PostMapping
     public ResponseEntity<CompetenceResponseDto> creer(@RequestBody @Valid CompetenceRequestDto dto) {
-        // On délègue la logique au UseCase comme pour l'Aventurier
         CompetenceResponseDto response = creerCompetenceUseCase.executer(dto);
-        
-        // On retourne un code 201 Created avec le résultat
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -58,9 +52,21 @@ public class CompetenceController {
         return ResponseEntity.ok(listerUseCase.executer(page, size));
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<CompetenceResponseDto> obtenir(@PathVariable UUID id) {
         return ResponseEntity.ok(obtenirUseCase.executer(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CompetenceResponseDto> modifier(
+            @PathVariable UUID id,
+            @RequestBody @Valid CompetenceRequestDto dto) {
+        return ResponseEntity.ok(modifierUseCase.executer(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT) // Code 204 pour la suppression
+    public void supprimer(@PathVariable UUID id) {
+        supprimerUseCase.execute(id);
     }
 }

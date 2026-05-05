@@ -159,6 +159,7 @@ export default function App() {
 {page === "competence-detail" && (
   <CompetenceDetail
     id={selectedId}
+    role={role} // <-- AJOUT INDISPENSABLE pour la sécurité et le bouton Delete
     onBack={() => navigateTo("competences")}
     onEdit={role === "ROLE_ADMIN" ? () => navigateTo("competence-edit", selectedId) : undefined}
   />
