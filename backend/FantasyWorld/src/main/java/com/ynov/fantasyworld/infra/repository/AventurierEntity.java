@@ -1,7 +1,10 @@
 package com.ynov.fantasyworld.infra.repository;
 
 import com.ynov.fantasyworld.domain.Classe;
+import com.ynov.fantasyworld.domain.Competence;
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -35,6 +38,14 @@ public class AventurierEntity {
     @Column(nullable = false, length = 30)
     private Classe classe;
 
+    @ManyToMany
+    @JoinTable(
+            name = "aventurier_competences",
+            joinColumns = @JoinColumn(name = "aventurier_id"),
+            inverseJoinColumns = @JoinColumn(name = "competence_id")
+    )
+    private Set<Competence> competences = new HashSet<>();
+
     // Constructeur vide obligatoire pour JPA
     protected AventurierEntity() {}
 
@@ -47,6 +58,7 @@ public class AventurierEntity {
     public int getPerception() { return perception; }
     public int getNiveau() { return niveau; }
     public Classe getClasse() { return classe; }
+    public Set<Competence> getCompetences() { return competences; }
 
     // Setters
     public void setId(UUID id) { this.id = id; }
@@ -57,4 +69,8 @@ public class AventurierEntity {
     public void setPerception(int perception) { this.perception = perception; }
     public void setNiveau(int niveau) { this.niveau = niveau; }
     public void setClasse(Classe classe) { this.classe = classe; }
+    public void setCompetences(Set<Competence> competences) { this.competences = competences == null ? new HashSet<>() : competences; }
+
+    public void addCompetence(Competence competence) { this.competences.add(competence); }
+    public void removeCompetence(Competence competence) { this.competences.remove(competence); }
 }

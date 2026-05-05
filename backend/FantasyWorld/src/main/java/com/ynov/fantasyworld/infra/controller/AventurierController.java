@@ -1,7 +1,9 @@
 package com.ynov.fantasyworld.infra.controller;
 
+import com.ynov.fantasyworld.infra.controller.dto.AjouterCompetenceRequestDto;
 import com.ynov.fantasyworld.infra.controller.dto.AventurierRequestDto;
 import com.ynov.fantasyworld.infra.controller.dto.AventurierResponseDto;
+import com.ynov.fantasyworld.infra.controller.dto.CompetenceResumeeDto;
 import com.ynov.fantasyworld.infra.controller.dto.PageResponseDto;
 import com.ynov.fantasyworld.services.*;
 import jakarta.validation.Valid;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,19 +29,29 @@ public class AventurierController {
     private final ModifierAventurierUseCase modifierUseCase;
     private final LogService logService;
 
+    private final AjouterCompetenceAventurierUseCase ajouterCompetenceUseCase;
+    private final RetirerCompetenceAventurierUseCase retirerCompetenceUseCase;
+    private final ListerCompetencesAventurierUseCase listerCompetencesUseCase;
+
     public AventurierController(
             CreerAventurierUseCase creerUseCase,
             ListerAventuriersUseCase listerUseCase,
             ObtenirAventurierUseCase obtenirUseCase,
             SupprimerAventurierUseCase supprimerUseCase,
             ModifierAventurierUseCase modifierUseCase,
-            LogService logService) {
+            LogService logService,
+            AjouterCompetenceAventurierUseCase ajouterCompetenceUseCase,
+            RetirerCompetenceAventurierUseCase retirerCompetenceUseCase,
+            ListerCompetencesAventurierUseCase listerCompetencesUseCase) {
         this.creerUseCase = creerUseCase;
         this.listerUseCase = listerUseCase;
         this.obtenirUseCase = obtenirUseCase;
         this.supprimerUseCase = supprimerUseCase;
         this.modifierUseCase = modifierUseCase;
         this.logService = logService;
+        this.ajouterCompetenceUseCase = ajouterCompetenceUseCase;
+        this.retirerCompetenceUseCase = retirerCompetenceUseCase;
+        this.listerCompetencesUseCase = listerCompetencesUseCase;
     }
 
     @PostMapping
@@ -95,6 +108,41 @@ public class AventurierController {
         payload.put("id", id.toString());
         payload.put("nom", response.nom());
         logService.info("Aventurier modifié", payload);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/competences")
+    public ResponseEntity<AventurierResponseDto> ajouterCompetence(
+            @PathVariable UUID id,
+            @Valid @RequestBody AjouterCompetenceRequestDto dto) {
+        AventurierResponseDto response = ajouterCompetenceUseCase.executer(id, dto);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", id.toString());
+        payload.put("competenceId", dto.competenceId().toString());
+        logService.info("Compétence ajoutée à un aventurier", payload);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}/competences/{competenceId}")
+    public ResponseEntity<AventurierResponseDto> retirerCompetence(
+            @PathVariable UUID id,
+            @PathVariable UUID competenceId) {
+        AventurierResponseDto response = retirerCompetenceUseCase.executer(id, competenceId);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", id.toString());
+        payload.put("competenceId", competenceId.toString());
+        logService.info("Compétence retirée d'un aventurier", payload);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/competences")
+    public ResponseEntity<List<CompetenceResumeeDto>> listerCompetences(
+            @PathVariable UUID id) {
+        List<CompetenceResumeeDto> response = listerCompetencesUseCase.executer(id);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", id.toString());
+        payload.put("count", response.size());
+        logService.info("Compétences d'un aventurier consultées", payload);
         return ResponseEntity.ok(response);
     }
 }

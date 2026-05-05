@@ -1,5 +1,7 @@
 package com.ynov.fantasyworld.domain;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class Aventurier {
@@ -12,6 +14,7 @@ public class Aventurier {
     private int perception;
     private int niveau;
     private Classe classe;
+    private Set<UUID> competencesAcquises = new HashSet<>();
 
     // Constructeur — niveau TOUJOURS 1 à la création
     public Aventurier(String nom, String description,
@@ -37,6 +40,30 @@ public class Aventurier {
         this.niveau++;
     }
 
+    public void ajouterCompetence(UUID competenceId) {
+        if (competenceId == null) {
+            throw new IllegalArgumentException("L'identifiant de compétence ne peut pas être null");
+        }
+        if (competencesAcquises.contains(competenceId)) {
+            throw new IllegalStateException("Cette compétence est déjà acquise");
+        }
+        competencesAcquises.add(competenceId);
+    }
+
+    public void retirerCompetence(UUID competenceId) {
+        if (competenceId == null) {
+            throw new IllegalArgumentException("L'identifiant de compétence ne peut pas être null");
+        }
+        if (!competencesAcquises.contains(competenceId)) {
+            throw new IllegalStateException("Cette compétence n'est pas acquise");
+        }
+        competencesAcquises.remove(competenceId);
+    }
+
+    public boolean possederCompetence(UUID competenceId) {
+        return competenceId != null && competencesAcquises.contains(competenceId);
+    }
+
     // Getters
     public UUID getId() { return id; }
     public String getNom() { return nom; }
@@ -46,11 +73,10 @@ public class Aventurier {
     public int getPerception() { return perception; }
     public int getNiveau() { return niveau; }
     public Classe getClasse() { return classe; }
-
+    public Set<UUID> getCompetencesAcquises() { return new HashSet<>(competencesAcquises); }
 
     // Setter uniquement pour l'id
     public void setId(UUID id) { this.id = id; }
-    // Ajoute ce setter à la fin de Aventurier.java
     public void setNiveau(int niveau) { this.niveau = niveau; }
     public void setNom(String nom) {
         if (nom == null || nom.isBlank()) {
@@ -63,4 +89,7 @@ public class Aventurier {
     public void setMental(int mental) { this.mental = mental; }
     public void setPerception(int perception) { this.perception = perception; }
     public void setClasse(Classe classe) { this.classe = classe; }
+    public void setCompetencesAcquises(Set<UUID> competencesAcquises) {
+        this.competencesAcquises = competencesAcquises == null ? new HashSet<>() : new HashSet<>(competencesAcquises);
+    }
 }
