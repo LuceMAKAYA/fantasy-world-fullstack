@@ -1,0 +1,23 @@
+.competence-edit { max-width: 700px; margin: 0 auto; padding: 1.5rem; }
+.competence-edit h2 { margin-bottom: 1.5rem; }
+
+.edit-form { display: flex; flex-direction: column; gap: 1.2rem; }
+
+.carac-group { display: flex; gap: 0.8rem; align-items: center; }
+.carac-group select, .carac-group input { flex: 1; }
+
+.competences-checkboxes {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  max-height: 200px; overflow-y: auto;
+  border: 1px solid var(--border-purple);
+  border-radius: var(--radius-sm); padding: 0.8rem;
+}
+
+.checkbox-label {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.9rem; cursor: pointer; color: var(--text);
+}
+
+.checkbox-label input { width: auto; }
+
+.form-actions { display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 0.5rem; }

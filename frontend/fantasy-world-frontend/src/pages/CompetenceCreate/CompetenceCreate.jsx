@@ -19,7 +19,7 @@ const CompetenceCreate = ({ onSuccess }) => {
         e.preventDefault();
 
         // RÉCUPÉRATION DU TOKEN (Indispensable pour éviter la 403)
-        const token = localStorage.getItem("token"); 
+       const token = sessionStorage.getItem("fantasy_token"); 
 
         try {
             const response = await axios.post('http://localhost:8081/competences', formData, {
@@ -68,6 +68,16 @@ const CompetenceCreate = ({ onSuccess }) => {
                         onChange={(e) => setFormData({...formData, description: e.target.value})}
                     />
                 </div>
+                <div className="form-group">
+    <label>Niveau minimum</label>
+    <input
+        type="number"
+        min="1"
+        max="100"
+        value={formData.niveauMinimum}
+        onChange={(e) => setFormData({...formData, niveauMinimum: parseInt(e.target.value)})}
+    />
+</div>
 
                 <div className="form-group">
                     <label>Classe Requise</label>
