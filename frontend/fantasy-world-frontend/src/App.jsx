@@ -5,6 +5,7 @@ import AventuriersList from "./pages/AventurierList/AventuriersList";
 import AventurierDetail from "./pages/AventurierDetail/AventurierDetail";
 import AventurierCreate from "./pages/AventurierCreate/AventurierCreate";
 import CompetenceCreate from "./pages/CompetenceCreate/CompetenceCreate";
+import CompetencesList from "./pages/CompetencesList/CompetencesList";
 import Login from "./pages/Login/Login";
 import AccessDenied from "./pages/AccessDenied/AccessDenied";
 import Footer from "./components/Layout/Footer/Footer";
@@ -145,6 +146,14 @@ export default function App() {
         {page === "competence-create" && role === "ROLE_ADMIN" && (
           <CompetenceCreate onSuccess={() => navigateTo("list")} />
         )}
+        {page === "competences" && (
+  <CompetencesList
+    onSelect={(id) => navigateTo("competence-detail", id)}
+    canCreate={role === "ROLE_ADMIN"}
+    onCreate={() => navigateTo("competence-create")}
+  />
+)}
+        
         {page === "forbidden" && (
           <AccessDenied onBack={() => navigateTo("list")} />
         )}
