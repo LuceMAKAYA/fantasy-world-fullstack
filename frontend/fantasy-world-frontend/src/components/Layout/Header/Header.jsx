@@ -18,6 +18,13 @@ const Header = ({ getUsername, role, navigateTo, handleLogout, page }) => {
         >
           Roster
         </button>
+        <button
+  className="btn-secondary"
+  onClick={() => navigateTo("competences")}
+  aria-current={page === "competences" ? "page" : undefined}
+>
+  ✨ Compétences
+</button>
 
         {/* Section réservée aux ADMINS */}
         {role === "ROLE_ADMIN" && (
@@ -39,6 +46,7 @@ const Header = ({ getUsername, role, navigateTo, handleLogout, page }) => {
               📜 Grimoire
             </button>
           </>
+          
         )}
 
         {/* Bouton Déconnexion */}

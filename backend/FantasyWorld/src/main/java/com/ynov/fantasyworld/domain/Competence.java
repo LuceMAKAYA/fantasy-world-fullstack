@@ -53,4 +53,8 @@ public class Competence {
     public UUID getId() { return id; }
     public String getNom() { return nom; }
     public String getDescription() { return description; }
+    public Classe getClasseRequise() { return classeRequise; }
+    public Integer getNiveauMinimum() { return niveauMinimum; }
+    public CaracteristiqueMin getCaracteristiqueMin() { return caracteristiqueMin; }
+    public List<Competence> getCompetencesRequises() { return competencesRequises; }
 }
