@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+
+data/fantasy.lock.db
