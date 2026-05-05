@@ -1,0 +1,45 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(20, 20, 20, 0.9);
+  border-bottom: 2px solid #d4af37;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.app-header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  margin: 0;
+  color: #fff;
+}
+
+.app-header h1 span {
+  color: #d4af37;
+}
+
+.username {
+  color: #d4af37;
+  margin-right: 20px;
+  font-weight: bold;
+  font-family: 'Cinzel', serif;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* On s'assure que les boutons gardent leur style global ou on les définit ici */
+.btn-primary, .btn-secondary, .btn-danger {
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}

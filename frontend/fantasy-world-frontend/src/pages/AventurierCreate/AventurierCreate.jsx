@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createAventurier } from "../services/aventurierService";
+import { createAventurier } from "../../services/aventurierService";
 import "./AventurierCreate.css";
 
 const CLASSES = [

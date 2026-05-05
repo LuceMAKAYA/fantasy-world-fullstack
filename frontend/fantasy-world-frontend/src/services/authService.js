@@ -1,4 +1,4 @@
-const AUTH_URL = "http://localhost:8080/auth";
+const AUTH_URL = "http://localhost:8081/auth";
 const TOKEN_KEY = "fantasy_token";
 const USERNAME_KEY = "fantasy_username";
 const ROLE_KEY = "fantasy_role";
