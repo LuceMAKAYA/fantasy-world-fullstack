@@ -57,4 +57,12 @@ public class Competence {
     public Integer getNiveauMinimum() { return niveauMinimum; }
     public CaracteristiqueMin getCaracteristiqueMin() { return caracteristiqueMin; }
     public List<Competence> getCompetencesRequises() { return competencesRequises; }
+
+    // SETTERS
+    public void setNom(String nom) { this.nom = nom; }
+    public void setDescription(String description) { this.description = description; }
+    public void setClasseRequise(Classe classeRequise) { this.classeRequise = classeRequise; }
+    public void setNiveauMinimum(Integer niveauMinimum) { this.niveauMinimum = niveauMinimum; }
+    public void setCaracteristiqueMin(CaracteristiqueMin caracteristiqueMin) { this.caracteristiqueMin = caracteristiqueMin; }
+    public void setCompetencesRequises(List<Competence> competencesRequises) { this.competencesRequises = competencesRequises; }
 }
