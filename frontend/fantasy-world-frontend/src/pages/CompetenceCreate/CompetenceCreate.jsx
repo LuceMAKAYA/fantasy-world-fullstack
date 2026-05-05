@@ -6,7 +6,7 @@ const CompetenceCreate = ({ onSuccess }) => {
     const [formData, setFormData] = useState({
         nom: '',
         description: '',
-        classeRequise: 'GARDIEN',
+        classeRequise: '',
         niveauMinimum: 1,
         caracteristiqueMin: {
             caracteristique: 'PHYSIQUE',
@@ -85,9 +85,12 @@ const CompetenceCreate = ({ onSuccess }) => {
                         value={formData.classeRequise}
                         onChange={(e) => setFormData({...formData, classeRequise: e.target.value})}
                     >
-                        <option value="GARDIEN">Gardien</option>
-                        <option value="ARCANISTE">Arcaniste</option>
-                        <option value="MAITRE_D_ARMES">Maître d'armes</option>
+                        <option value="">— Aucune classe requise —</option>
+        <option value="MAITRE_D_ARMES">⚔️ Maître d'armes</option>
+        <option value="ECLAIREUR">🏹 Éclaireur</option>
+        <option value="ARCANISTE">🔮 Arcaniste</option>
+        <option value="GARDIEN">🛡️ Gardien</option>
+        <option value="PREDICATEUR">📖 Prédicateur</option>
                     </select>
                 </div>
 
