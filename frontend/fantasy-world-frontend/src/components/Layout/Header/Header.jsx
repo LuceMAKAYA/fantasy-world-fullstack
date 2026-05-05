@@ -1,59 +1,56 @@
 import React from 'react';
+import { NavLink, Link } from 'react-router-dom';
 import './Header.css';
 
-const Header = ({ getUsername, role, navigateTo, handleLogout, page }) => {
+const Header = ({ getUsername, role, handleLogout }) => {
   return (
     <header className="app-header" role="banner">
-      <h1>⚔ FANTASY <span>WORLD</span></h1>
+      {/* Le logo utilise Link car on n'a pas besoin de style "actif" dessus */}
+      <Link to="/" className="header-logo">
+        <h1>⚔ FANTASY <span>WORLD</span></h1>
+      </Link>
       
       <nav role="navigation" aria-label="Navigation principale">
-        {/* Affichage du pseudo via la fonction passée en prop */}
         <span className="username">⚜ {getUsername()}</span>
         
-        {/* Bouton Roster accessible à tous */}
-        <button
-          className="btn-secondary"
-          onClick={() => navigateTo("list")}
-          aria-current={page === "list" ? "page" : undefined}
+        {/* NavLink ajoute automatiquement la classe .active quand l'URL correspond */}
+        <NavLink 
+          to="/aventuriers" 
+          className={({ isActive }) => isActive ? "btn-secondary active" : "btn-secondary"}
         >
           Roster
-        </button>
-        <button
-  className="btn-secondary"
-  onClick={() => navigateTo("competences")}
-  aria-current={page === "competences" ? "page" : undefined}
->
-  ✨ Compétences
-</button>
+        </NavLink>
 
-        {/* Section réservée aux ADMINS */}
+        <NavLink 
+          to="/competences" 
+          className={({ isActive }) => isActive ? "btn-secondary active" : "btn-secondary"}
+        >
+          ✨ Compétences
+        </NavLink>
+
         {role === "ROLE_ADMIN" && (
           <>
-            <button
-              className="btn-primary"
-              onClick={() => navigateTo("create")}
-              aria-current={page === "create" ? "page" : undefined}
+            <NavLink 
+              to="/aventuriers/create" 
+              className={({ isActive }) => isActive ? "btn-primary active" : "btn-primary"}
             >
               + Recruit
-            </button>
+            </NavLink>
             
-            <button
-              className="btn-primary"
-              onClick={() => navigateTo("competence-create")}
-              aria-current={page === "competence-create" ? "page" : undefined}
+            <NavLink 
+              to="/competences/create" 
+              className={({ isActive }) => isActive ? "btn-primary active" : "btn-primary"}
               style={{ marginLeft: "8px" }}
             >
               📜 Grimoire
-            </button>
+            </NavLink>
           </>
-          
         )}
 
-        {/* Bouton Déconnexion */}
         <button
           className="btn-danger"
           onClick={handleLogout}
-          aria-label="Se déconnecter"
+          style={{ marginLeft: "15px" }}
         >
           ⎋ Leave
         </button>
