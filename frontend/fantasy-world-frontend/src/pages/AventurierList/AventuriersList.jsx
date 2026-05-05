@@ -78,16 +78,6 @@ export default function AventuriersList({ onSelect, canDelete = false }) {
         </div>
       )}
 
-      {aventuriers.map((aventurier) => (
-          <AventurierCard
-            key={aventurier.id}
-            aventurier={aventurier}
-            onSelect={onSelect}
-            onDelete={handleDelete}
-            canDelete={canDelete}  // ← ajoute ça
-          />
-        ))}
-
       {status === "success" && aventuriers.length > 0 && (
         <>
           <div className="aventuriers-grid">
@@ -97,6 +87,7 @@ export default function AventuriersList({ onSelect, canDelete = false }) {
                 aventurier={aventurier}
                 onSelect={onSelect}
                 onDelete={handleDelete}
+                canDelete={canDelete}
               />
             ))}
           </div>

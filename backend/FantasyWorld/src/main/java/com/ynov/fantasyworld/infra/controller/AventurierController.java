@@ -22,6 +22,8 @@ public class AventurierController {
     private final ListerAventuriersUseCase listerUseCase;
     private final ObtenirAventurierUseCase obtenirUseCase;
     private final SupprimerAventurierUseCase supprimerUseCase;
+
+    private final ModifierAventurierUseCase modifierUseCase;
     private final LogService logService;
 
     public AventurierController(
@@ -29,11 +31,13 @@ public class AventurierController {
             ListerAventuriersUseCase listerUseCase,
             ObtenirAventurierUseCase obtenirUseCase,
             SupprimerAventurierUseCase supprimerUseCase,
+            ModifierAventurierUseCase modifierUseCase,
             LogService logService) {
         this.creerUseCase = creerUseCase;
         this.listerUseCase = listerUseCase;
         this.obtenirUseCase = obtenirUseCase;
         this.supprimerUseCase = supprimerUseCase;
+        this.modifierUseCase = modifierUseCase;
         this.logService = logService;
     }
 
@@ -80,5 +84,17 @@ public class AventurierController {
         payload.put("id", id.toString());
         logService.info("Aventurier supprimé", payload);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AventurierResponseDto> modifier(
+            @PathVariable UUID id,
+            @Valid @RequestBody AventurierRequestDto dto) {
+        AventurierResponseDto response = modifierUseCase.executer(id, dto);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", id.toString());
+        payload.put("nom", response.nom());
+        logService.info("Aventurier modifié", payload);
+        return ResponseEntity.ok(response);
     }
 }

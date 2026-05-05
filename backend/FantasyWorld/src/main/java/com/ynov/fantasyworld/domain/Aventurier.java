@@ -52,4 +52,15 @@ public class Aventurier {
     public void setId(UUID id) { this.id = id; }
     // Ajoute ce setter à la fin de Aventurier.java
     public void setNiveau(int niveau) { this.niveau = niveau; }
+    public void setNom(String nom) {
+        if (nom == null || nom.isBlank()) {
+            throw new IllegalArgumentException("Le nom ne peut pas être vide");
+        }
+        this.nom = nom;
+    }
+    public void setDescription(String description) { this.description = description; }
+    public void setPhysique(int physique) { this.physique = physique; }
+    public void setMental(int mental) { this.mental = mental; }
+    public void setPerception(int perception) { this.perception = perception; }
+    public void setClasse(Classe classe) { this.classe = classe; }
 }

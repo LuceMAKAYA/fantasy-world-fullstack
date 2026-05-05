@@ -10,7 +10,7 @@ const CLASSE_EMOJI = {
   PREDICATEUR: "📖",
 };
 
-export default function AventurierDetail({ id, onBack }) {
+export default function AventurierDetail({ id, onBack, onEdit }) {
   const [aventurier, setAventurier] = useState(null);
   const [status, setStatus] = useState("loading");
   const [errorMessage, setErrorMessage] = useState("");
@@ -67,6 +67,11 @@ export default function AventurierDetail({ id, onBack }) {
             </span>
           </div>
           <span className="detail-niveau">Niv. {aventurier.niveau}</span>
+          {onEdit && (
+    <button className="btn-primary" onClick={onEdit} aria-label="Modifier l'aventurier">
+      ✏️ Modifier
+    </button>
+  )}
         </div>
 
         {aventurier.description && (

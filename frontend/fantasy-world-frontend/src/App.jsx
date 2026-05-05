@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { isAuthenticated, logout, getUsername, isAdmin } from "./services/authService";
+import { isAuthenticated, logout, getUsername, getRole } from "./services/authService";
+import AventurierEdit from "./pages/AventurierEdit";
 import AventuriersList from "./pages/AventurierList/AventuriersList";
 import AventurierDetail from "./pages/AventurierDetail/AventurierDetail";
 import AventurierCreate from "./pages/AventurierCreate/AventurierCreate";
@@ -68,8 +69,10 @@ export default function App() {
   const [page, setPage] = useState("list");
   const [selectedId, setSelectedId] = useState(null);
   const [authenticated, setAuthenticated] = useState(isAuthenticated());
+  const [role, setRole] = useState(getRole());
 
   const navigateTo = (pageName, id = null) => {
+    if (pageName === "create" && role !== "ROLE_ADMIN") {
     // Mise à jour de la sécurité pour inclure la page de compétence
     const protectedPages = ["create", "competence-create"];
     if (protectedPages.includes(pageName) && !isAdmin()) {
@@ -83,11 +86,13 @@ export default function App() {
   function handleLogout() {
     logout();
     setAuthenticated(false);
+    setRole(null);
     setPage("list");
   }
 
   function handleLoginSuccess() {
     setAuthenticated(true);
+    setRole(getRole());
     setPage("list");
   }
 
@@ -111,6 +116,35 @@ export default function App() {
   return (
     <div className="app">
       <ParticlesBackground />
+      <header className="app-header" role="banner">
+        <h1>⚔ FANTASY <span>WORLD</span></h1>
+        <nav role="navigation" aria-label="Navigation principale">
+          <span className="username">⚜ {getUsername()}</span>
+          <button
+            className="btn-secondary"
+            onClick={() => navigateTo("list")}
+            aria-current={page === "list" ? "page" : undefined}
+          >
+            Roster
+          </button>
+          {role === "ROLE_ADMIN" && (
+            <button
+              className="btn-primary"
+              onClick={() => navigateTo("create")}
+              aria-current={page === "create" ? "page" : undefined}
+            >
+              + Recruit
+            </button>
+          )}
+          <button
+            className="btn-danger"
+            onClick={handleLogout}
+            aria-label="Se déconnecter"
+          >
+            ⎋ Leave
+          </button>
+        </nav>
+      </header>
       <Header 
       getUsername={getUsername} // <-- Vérifie que cette ligne existe bien !
       isAdmin={isAdmin}
@@ -123,16 +157,17 @@ export default function App() {
         {page === "list" && (
           <AventuriersList
             onSelect={(id) => navigateTo("detail", id)}
-            canDelete={isAdmin()}
+            canDelete={role === "ROLE_ADMIN"}
           />
         )}
         {page === "detail" && (
           <AventurierDetail
             id={selectedId}
             onBack={() => navigateTo("list")}
+            onEdit={role === "ROLE_ADMIN" ? () => navigateTo("edit", selectedId) : undefined}
           />
         )}
-        {page === "create" && isAdmin() && (
+        {page === "create" && role === "ROLE_ADMIN" && (
           <AventurierCreate onSuccess={() => navigateTo("list")} />
         )}
         {/* Rendu de la page compétence rajouté */}
@@ -142,6 +177,13 @@ export default function App() {
         {page === "forbidden" && (
           <AccessDenied onBack={() => navigateTo("list")} />
         )}
+        {page === "edit" && role === "ROLE_ADMIN" && (
+  <AventurierEdit
+    id={selectedId}
+    onSuccess={() => navigateTo("list")}
+    onBack={() => navigateTo("detail", selectedId)}
+  />
+)}
       </main>
 
       <Footer/>
