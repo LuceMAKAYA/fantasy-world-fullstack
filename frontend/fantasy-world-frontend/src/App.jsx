@@ -6,6 +6,8 @@ import AventurierDetail from "./pages/AventurierDetail/AventurierDetail";
 import AventurierCreate from "./pages/AventurierCreate/AventurierCreate";
 import CompetenceCreate from "./pages/CompetenceCreate/CompetenceCreate";
 import CompetencesList from "./pages/CompetencesList/CompetencesList";
+import CompetenceDetail from "./pages/CompetenceDetail/CompetenceDetail";
+import CompetenceEdit from "./pages/CompetenceEdit/CompetenceEdit";
 import Login from "./pages/Login/Login";
 import AccessDenied from "./pages/AccessDenied/AccessDenied";
 import Footer from "./components/Layout/Footer/Footer";
@@ -73,7 +75,7 @@ export default function App() {
 
   // Correction de la fonction navigateTo
   const navigateTo = (pageName, id = null) => {
-    const protectedPages = ["create", "competence-create", "edit"];
+    const protectedPages = ["create", "competence-create", "competence-edit", "edit"];
     
     if (protectedPages.includes(pageName) && role !== "ROLE_ADMIN") {
       setPage("forbidden");
@@ -151,6 +153,23 @@ export default function App() {
     onSelect={(id) => navigateTo("competence-detail", id)}
     canCreate={role === "ROLE_ADMIN"}
     onCreate={() => navigateTo("competence-create")}
+  />
+)}
+
+{page === "competence-detail" && (
+  <CompetenceDetail
+    id={selectedId}
+    role={role} // <-- AJOUT INDISPENSABLE pour la sécurité et le bouton Delete
+    onBack={() => navigateTo("competences")}
+    onEdit={role === "ROLE_ADMIN" ? () => navigateTo("competence-edit", selectedId) : undefined}
+  />
+)}
+
+{page === "competence-edit" && role === "ROLE_ADMIN" && (
+  <CompetenceEdit
+    id={selectedId}
+    onSuccess={() => navigateTo("competences")}
+    onBack={() => navigateTo("competence-detail", selectedId)}
   />
 )}
         

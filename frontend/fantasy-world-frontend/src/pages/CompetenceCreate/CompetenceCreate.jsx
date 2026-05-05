@@ -6,7 +6,7 @@ const CompetenceCreate = ({ onSuccess }) => {
     const [formData, setFormData] = useState({
         nom: '',
         description: '',
-        classeRequise: 'GARDIEN',
+        classeRequise: '',
         niveauMinimum: 1,
         caracteristiqueMin: {
             caracteristique: 'PHYSIQUE',
@@ -19,7 +19,7 @@ const CompetenceCreate = ({ onSuccess }) => {
         e.preventDefault();
 
         // RÉCUPÉRATION DU TOKEN (Indispensable pour éviter la 403)
-        const token = localStorage.getItem("token"); 
+       const token = sessionStorage.getItem("fantasy_token"); 
 
         try {
             const response = await axios.post('http://localhost:8081/competences', formData, {
@@ -68,6 +68,16 @@ const CompetenceCreate = ({ onSuccess }) => {
                         onChange={(e) => setFormData({...formData, description: e.target.value})}
                     />
                 </div>
+                <div className="form-group">
+    <label>Niveau minimum</label>
+    <input
+        type="number"
+        min="1"
+        max="100"
+        value={formData.niveauMinimum}
+        onChange={(e) => setFormData({...formData, niveauMinimum: parseInt(e.target.value)})}
+    />
+</div>
 
                 <div className="form-group">
                     <label>Classe Requise</label>
@@ -75,9 +85,12 @@ const CompetenceCreate = ({ onSuccess }) => {
                         value={formData.classeRequise}
                         onChange={(e) => setFormData({...formData, classeRequise: e.target.value})}
                     >
-                        <option value="GARDIEN">Gardien</option>
-                        <option value="ARCANISTE">Arcaniste</option>
-                        <option value="MAITRE_D_ARMES">Maître d'armes</option>
+                        <option value="">— Aucune classe requise —</option>
+        <option value="MAITRE_D_ARMES">⚔️ Maître d'armes</option>
+        <option value="ECLAIREUR">🏹 Éclaireur</option>
+        <option value="ARCANISTE">🔮 Arcaniste</option>
+        <option value="GARDIEN">🛡️ Gardien</option>
+        <option value="PREDICATEUR">📖 Prédicateur</option>
                     </select>
                 </div>
 
