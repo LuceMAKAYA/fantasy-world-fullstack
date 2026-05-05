@@ -1,13 +1,19 @@
 package com.ynov.fantasyworld.domain;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CompetenceRepository extends JpaRepository<Competence, UUID> {
-    // Cette interface hérite de toutes les méthodes de base :
-    // .save() -> utilisé dans ton Use Case
-    // .findAllById() -> utilisé pour charger les prérequis
-    // .findById() -> pour chercher une compétence précise
+public interface CompetenceRepository {
+    Competence save(Competence competence);
+    Optional<Competence> findById(UUID id);
+    Page<Competence> findAll(PageRequest pageRequest);
+    List<Competence> findAllById(List<UUID> ids);
+    void deleteById(UUID id);
+    boolean existsById(UUID id);
 }

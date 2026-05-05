@@ -122,7 +122,7 @@ export default function App() {
       {/* Utilisation du composant Header unique */}
       <Header
         getUsername={getUsername}
-        role={role} // On passe le role au lieu de isAdmin
+        role={role} 
         navigateTo={navigateTo}
         handleLogout={handleLogout}
         page={page}
@@ -146,7 +146,7 @@ export default function App() {
           <AventurierCreate onSuccess={() => navigateTo("list")} />
         )}
         {page === "competence-create" && role === "ROLE_ADMIN" && (
-          <CompetenceCreate onSuccess={() => navigateTo("list")} />
+          <CompetenceCreate onSuccess={() => navigateTo("competences")} />
         )}
         {page === "competences" && (
   <CompetencesList
