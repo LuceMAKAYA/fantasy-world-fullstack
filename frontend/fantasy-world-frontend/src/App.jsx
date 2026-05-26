@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { isAuthenticated, logout, getUsername, getRole } from "./services/authService";
+import {
+  isAuthenticated,
+  logout,
+  getUsername,
+  getRole,
+} from "./services/authService";
 import AventurierEdit from "./pages/AventurierEdit";
 import AventuriersList from "./pages/AventurierList/AventuriersList";
 import AventurierDetail from "./pages/AventurierDetail/AventurierDetail";
@@ -21,7 +26,7 @@ function ParticlesBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     let animId;
 
     function resize() {
@@ -29,7 +34,7 @@ function ParticlesBackground() {
       canvas.height = window.innerHeight;
     }
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener("resize", resize);
 
     const particles = Array.from({ length: 50 }, () => ({
       x: Math.random() * window.innerWidth,
@@ -38,15 +43,18 @@ function ParticlesBackground() {
       vx: (Math.random() - 0.5) * 0.25,
       vy: -Math.random() * 0.35 - 0.1,
       alpha: Math.random() * 0.35 + 0.08,
-      color: Math.random() > 0.5 ? '212,175,55' : '124,58,237'
+      color: Math.random() > 0.5 ? "212,175,55" : "124,58,237",
     }));
 
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
+      particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
-        if (p.y < -5) { p.y = canvas.height + 5; p.x = Math.random() * canvas.width; }
+        if (p.y < -5) {
+          p.y = canvas.height + 5;
+          p.x = Math.random() * canvas.width;
+        }
         if (p.x < 0) p.x = canvas.width;
         if (p.x > canvas.width) p.x = 0;
         ctx.beginPath();
@@ -60,7 +68,7 @@ function ParticlesBackground() {
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener("resize", resize);
     };
   }, []);
 
@@ -75,8 +83,13 @@ export default function App() {
 
   // Correction de la fonction navigateTo
   const navigateTo = (pageName, id = null) => {
-    const protectedPages = ["create", "competence-create", "competence-edit", "edit"];
-    
+    const protectedPages = [
+      "create",
+      "competence-create",
+      "competence-edit",
+      "edit",
+    ];
+
     if (protectedPages.includes(pageName) && role !== "ROLE_ADMIN") {
       setPage("forbidden");
     } else {
@@ -104,7 +117,9 @@ export default function App() {
       <div className="app">
         <ParticlesBackground />
         <header className="app-header">
-          <h1>⚔ FANTASY <span>WORLD</span></h1>
+          <h1>
+            ⚔ FANTASY <span>WORLD</span>
+          </h1>
         </header>
         <main className="app-main">
           <Login onSuccess={handleLoginSuccess} />
@@ -118,11 +133,11 @@ export default function App() {
   return (
     <div className="app">
       <ParticlesBackground />
-      
+
       {/* Utilisation du composant Header unique */}
       <Header
         getUsername={getUsername}
-        role={role} 
+        role={role}
         navigateTo={navigateTo}
         handleLogout={handleLogout}
         page={page}
@@ -138,8 +153,13 @@ export default function App() {
         {page === "detail" && (
           <AventurierDetail
             id={selectedId}
+            role={role}
             onBack={() => navigateTo("list")}
-            onEdit={role === "ROLE_ADMIN" ? () => navigateTo("edit", selectedId) : undefined}
+            onEdit={
+              role === "ROLE_ADMIN"
+                ? () => navigateTo("edit", selectedId)
+                : undefined
+            }
           />
         )}
         {page === "create" && role === "ROLE_ADMIN" && (
@@ -149,30 +169,34 @@ export default function App() {
           <CompetenceCreate onSuccess={() => navigateTo("competences")} />
         )}
         {page === "competences" && (
-  <CompetencesList
-    onSelect={(id) => navigateTo("competence-detail", id)}
-    canCreate={role === "ROLE_ADMIN"}
-    onCreate={() => navigateTo("competence-create")}
-  />
-)}
+          <CompetencesList
+            onSelect={(id) => navigateTo("competence-detail", id)}
+            canCreate={role === "ROLE_ADMIN"}
+            onCreate={() => navigateTo("competence-create")}
+          />
+        )}
 
-{page === "competence-detail" && (
-  <CompetenceDetail
-    id={selectedId}
-    role={role} // <-- AJOUT INDISPENSABLE pour la sécurité et le bouton Delete
-    onBack={() => navigateTo("competences")}
-    onEdit={role === "ROLE_ADMIN" ? () => navigateTo("competence-edit", selectedId) : undefined}
-  />
-)}
+        {page === "competence-detail" && (
+          <CompetenceDetail
+            id={selectedId}
+            role={role} // <-- AJOUT INDISPENSABLE pour la sécurité et le bouton Delete
+            onBack={() => navigateTo("competences")}
+            onEdit={
+              role === "ROLE_ADMIN"
+                ? () => navigateTo("competence-edit", selectedId)
+                : undefined
+            }
+          />
+        )}
 
-{page === "competence-edit" && role === "ROLE_ADMIN" && (
-  <CompetenceEdit
-    id={selectedId}
-    onSuccess={() => navigateTo("competences")}
-    onBack={() => navigateTo("competence-detail", selectedId)}
-  />
-)}
-        
+        {page === "competence-edit" && role === "ROLE_ADMIN" && (
+          <CompetenceEdit
+            id={selectedId}
+            onSuccess={() => navigateTo("competences")}
+            onBack={() => navigateTo("competence-detail", selectedId)}
+          />
+        )}
+
         {page === "forbidden" && (
           <AccessDenied onBack={() => navigateTo("list")} />
         )}

@@ -3,7 +3,9 @@ import apiClient from "./apiClient";
 const COMPETENCES_URL = "/competences";
 
 export async function getAllCompetences(page = 0, size = 6) {
-  const response = await apiClient(`${COMPETENCES_URL}?page=${page}&size=${size}`);
+  const response = await apiClient(
+    `${COMPETENCES_URL}?page=${page}&size=${size}`,
+  );
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.detail || "Erreur lors de la récupération");
@@ -16,6 +18,18 @@ export async function getCompetenceById(id) {
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.detail || "Compétence non trouvée");
+  }
+  return await response.json();
+}
+
+export async function createCompetence(data) {
+  const response = await apiClient(COMPETENCES_URL, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Erreur lors de la création");
   }
   return await response.json();
 }
@@ -49,7 +63,7 @@ export async function deleteCompetence(id) {
     }
     throw new Error(errorMessage);
   }
-  
+
   // Pour une 204 (No Content), on ne fait pas de .json() car le corps est vide
   return true;
 }

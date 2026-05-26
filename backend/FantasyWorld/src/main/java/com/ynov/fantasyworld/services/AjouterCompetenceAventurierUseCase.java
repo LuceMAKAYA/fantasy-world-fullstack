@@ -31,6 +31,8 @@ public class AjouterCompetenceAventurierUseCase {
         var aventurier = aventurierRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Aventurier non trouvé : " + id));
 
+        verifierPrerequis(competence, aventurier);
+
         aventurier.ajouterCompetence(dto.competenceId());
         var saved = aventurierRepository.save(aventurier);
 
@@ -41,5 +43,40 @@ public class AjouterCompetenceAventurierUseCase {
                 .collect(Collectors.toList());
 
         return AventurierResponseDto.from(saved, competences);
+    }
+
+    private void verifierPrerequis(com.ynov.fantasyworld.domain.Competence competence, Aventurier aventurier) {
+        if (competence.getNiveauMinimum() != null && aventurier.getNiveau() < competence.getNiveauMinimum()) {
+            throw new IllegalArgumentException("L'aventurier doit être au moins niveau " + competence.getNiveauMinimum());
+        }
+
+        if (competence.getClasseRequise() != null && aventurier.getClasse() != competence.getClasseRequise()) {
+            throw new IllegalArgumentException("Compétence réservée à la classe " + competence.getClasseRequise());
+        }
+
+        if (competence.getCaracteristiqueMin() != null) {
+            int valeurRequise = competence.getCaracteristiqueMin().valeur();
+            var caracteristique = competence.getCaracteristiqueMin().caracteristique();
+            int valeurAventurier;
+            switch (caracteristique) {
+                case PHYSIQUE -> valeurAventurier = aventurier.getPhysique();
+                case MENTAL -> valeurAventurier = aventurier.getMental();
+                case PERCEPTION -> valeurAventurier = aventurier.getPerception();
+                default -> valeurAventurier = 0;
+            }
+            if (valeurAventurier < valeurRequise) {
+                throw new IllegalArgumentException("La caractéristique " + caracteristique + " doit être au moins " + valeurRequise);
+            }
+        }
+
+        if (competence.getCompetencesRequises() != null && !competence.getCompetencesRequises().isEmpty()) {
+            var manquantes = competence.getCompetencesRequises().stream()
+                    .filter(prerequis -> !aventurier.possederCompetence(prerequis.getId()))
+                    .map(prerequis -> prerequis.getNom())
+                    .toList();
+            if (!manquantes.isEmpty()) {
+                throw new IllegalArgumentException("Compétences requises manquantes : " + String.join(", ", manquantes));
+            }
+        }
     }
 }

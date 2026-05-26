@@ -5,7 +5,7 @@ const AVENTURIERS_URL = "/aventuriers";
 export async function getAllAventuriers(page = 0, size = 6) {
   try {
     const response = await apiClient(
-      `${AVENTURIERS_URL}?page=${page}&size=${size}`
+      `${AVENTURIERS_URL}?page=${page}&size=${size}`,
     );
     if (!response.ok) {
       const error = await response.json();
@@ -23,6 +23,59 @@ export async function getAventurierById(id) {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.detail || "Aventurier non trouvé");
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || "Erreur réseau");
+  }
+}
+
+export async function getAventurierCompetences(id) {
+  try {
+    const response = await apiClient(`${AVENTURIERS_URL}/${id}/competences`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        error.detail || "Erreur lors de la récupération des compétences",
+      );
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || "Erreur réseau");
+  }
+}
+
+export async function addCompetenceToAventurier(id, competenceId) {
+  try {
+    const response = await apiClient(`${AVENTURIERS_URL}/${id}/competences`, {
+      method: "POST",
+      body: JSON.stringify({ competenceId }),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        error.detail || "Erreur lors de l'ajout de la compétence",
+      );
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || "Erreur réseau");
+  }
+}
+
+export async function removeCompetenceFromAventurier(id, competenceId) {
+  try {
+    const response = await apiClient(
+      `${AVENTURIERS_URL}/${id}/competences/${competenceId}`,
+      {
+        method: "DELETE",
+      },
+    );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        error.detail || "Erreur lors de la suppression de la compétence",
+      );
     }
     return await response.json();
   } catch (error) {
